@@ -9,7 +9,7 @@ from Bio import SeqIO
 
 # This function runs on the worker threads
 def process_chromosome(chrom, template_text, base_dir):
-    work_dir = os.path.join(base_dir, "work_dirs", chrom)
+    work_dir = os.path.join(base_dir, "work_dirs", "akt2")
     os.makedirs(work_dir, exist_ok=True)
 
     pattern_sequence_id = r'sequence_id\s*=\s*".*"'
@@ -18,7 +18,7 @@ def process_chromosome(chrom, template_text, base_dir):
 
     print(f"Starting analysis for: {chrom}")
 
-    new_outdir = os.path.join(base_dir, "Results", "A1", chrom)
+    new_outdir = os.path.join(base_dir, "Results", "A1", "akt2")
     # Apply substitutions
     new_config = template_text
     new_config = re.sub(pattern_sequence_id,  f'sequence_id = "{chrom}"',       new_config)
