@@ -42,11 +42,16 @@ conda activate pipeline_env
 ## Usage
 
 ### Example Usage
+0. **Create Results Directory**
+```bash
+mkdir ./Results
+```
+
 1. **Database Initialization (Required)**
 
 Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
 ```bash
-python scripts/00_db_prep.py ./Results/clusters_AKT2.db
+python scripts/00_db_prep.py ./Results/clusters.db
 ```
 
 2. **Pipeline Execution**

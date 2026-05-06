@@ -18,25 +18,23 @@ params.mapping = null
 params.org = null          
 params.db_path = "genome_clusters.db"
 
-input_sequence = Channel.fromPath(params.sequence, checkIfExists: true)
 
 // ---------------------------------------------------------
-// 2. Script Channels 
-// ---------------------------------------------------------
-script_extract_seq  = file("${projectDir}/scripts/0_extract_chr.py")
-script_full_chr      = file("${projectDir}/scripts/1_Exact_search.py")
-script_analyze_kmers = file("${projectDir}/scripts/2_Region_creation.py")
-script_final_nodes   = file("${projectDir}/scripts/4_Final_kmers.py")
-script_clusters      = file("${projectDir}/scripts/5_Clustering.py")
-
-// C Files
-script_c_main        = file("${projectDir}/scripts/3_Extension.c")
-dir_c_hash           = file("${projectDir}/scripts/zhash-c1")
-
-// ---------------------------------------------------------
-// 3. Workflow Definition
+// 2. Workflow Definition
 // ---------------------------------------------------------
 workflow {
+    input_sequence = Channel.fromPath(params.sequence, checkIfExists: true)
+
+    // 3. Script Channels 
+    script_extract_seq  = file("${projectDir}/scripts/0_extract_chr.py")
+    script_full_chr      = file("${projectDir}/scripts/1_Exact_search.py")
+    script_analyze_kmers = file("${projectDir}/scripts/2_Region_creation.py")
+    script_final_nodes   = file("${projectDir}/scripts/4_Final_kmers.py")
+    script_clusters      = file("${projectDir}/scripts/5_Clustering.py")
+    // C Files
+    script_c_main        = file("${projectDir}/scripts/3_Extension.c")
+    dir_c_hash           = file("${projectDir}/scripts/zhash-c1")
+
     // 0. Extract Sequence of Interest
     EXTRACT_SEQ(script_extract_seq, input_sequence)
 
