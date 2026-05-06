@@ -111,20 +111,26 @@ def calculate_group_stats(data_list, g1, g2):
 
 def main():
     parser = argparse.ArgumentParser(description="Compare Cluster Density: Chicken vs Human")
-    parser.add_argument("--chicken_dir", required=True, help="Path to Chicken results folder")
-    parser.add_argument("--chicken_fasta", required=True, help="Path to Chicken genome FASTA")
-    parser.add_argument("--human_dir", required=True, help="Path to Human results folder")
-    parser.add_argument("--human_fasta", required=True, help="Path to Human genome FASTA")
-
+    parser.add_argument("--dataset_1_dir", required=True, help="Path to Chicken results folder")
+    parser.add_argument("--dataset_1_fasta", required=True, help="Path to Chicken genome FASTA")
+    parser.add_argument("--dataset_2_dir", required=True, help="Path to Human results folder")
+    parser.add_argument("--dataset_2_fasta", required=True, help="Path to Human genome FASTA")
+    
+    if len(sys.argv) == 1:
+        print("\nWelcome to a script ready for comprehensive summary statistics and bar charts!")
+        print("You need to provide input files and parameters.\n")
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    
     args = parser.parse_args()
 
-    # 1. Load Genome Data (Length + GC)
-    chicken_info = get_genome_data(args.chicken_fasta)
-    human_info = get_genome_data(args.human_fasta)
+    # Load Genome Data (Length + GC)
+    chicken_info = get_genome_data(args.dataset_1_fasta)
+    human_info = get_genome_data(args.dataset_2_fasta)
 
-    # 2. Process Data
-    chicken_data = process_directory(args.chicken_dir, chicken_info, "Chicken")
-    human_data = process_directory(args.human_dir, human_info, "Human")
+    # Process Data
+    chicken_data = process_directory(args.dataset_1_dir, chicken_info, "Chicken")
+    human_data = process_directory(args.dataset_2_dir, human_info, "Human")
 
     # 3. Define Groups & Colors
     chicken_group_1 = ['CP100555.1', 'CP100556.1', 'CP100557.1', 'CP100558.1', 'CP100559.1', 'CP100560.1', 'CP100561.1', 'CP100562.1', 'CP100563.1', 'CP100594.1'] 

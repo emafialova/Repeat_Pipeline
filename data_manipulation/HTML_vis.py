@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""
-DB-Driven HTML visualizer for kmer occurrences.
-Uses relative database positions mapped to absolute genomic coordinates.
-Fixed: Implemented clash detection and a 12-color high-contrast palette.
-Added: Cluster metrics summary table.
-Added: In-text highlighting for Core K-mers.
-Added: Phylogenetic Tree visualization (Untruncated) + MSA (Single Block).
-"""
-
 import argparse
 import html
 import hashlib
@@ -22,9 +13,9 @@ from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstruct
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-# HElper function
+# Helper function
 def wrap_text(text, width):
-    """Splits a string into chunks of a specific width joined by <br>."""
+    """Split a string into chunks of a specific width joined by <br>."""
     if not text or len(text) <= width:
         return text
     return "<br>".join([text[i:i+width] for i in range(0, len(text), width)])
@@ -32,37 +23,34 @@ def wrap_text(text, width):
 # ---------- DATABASE DATA FETCHING ----------
 
 def get_cluster_data_from_db(db_path, human_id):
-    """Retrieves all necessary data for one cluster from the SQLite DB."""
+    """Retrieve all necessary data for one cluster from the SQLite database."""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     cursor.execute("SELECT internal_id, chrom, start_pos, end_pos FROM instances WHERE human_id = ?", (human_id,))
     meta = cursor.fetchone()
     if not meta:
-        print(f"❌ Error: ID {human_id} not found in database.")
+        print(f"Error: ID {human_id} not found in database.")
         sys.exit(1)
     
     internal_id, chrom, start, end = meta
     
-    # --- FETCH METRICS ---
     cursor.execute("""
         SELECT rep_sequence, gc, cons, med_len, avg_raw_lev, avg_norm_lev, 
                cov, region_size, kmer_num, avg_occ, med_occ 
         FROM cluster_details WHERE internal_id = ?""", (internal_id,))
     details = cursor.fetchone()
     
-    # --- FETCH FINAL KMERS ---
     cursor.execute("SELECT kmer_seq, positions, is_rep FROM final_kmer_info WHERE internal_id = ?", (internal_id,))
     rows = cursor.fetchall()
     positions_info = {row[0]: json.loads(row[1]) for row in rows}
     rep_seq = next((row[0] for row in rows if row[2] == 1), None)
 
-    # --- FETCH CORE KMERS ---
     cursor.execute("SELECT core_seq, positions FROM core_kmer_info WHERE internal_id = ?", (internal_id,))
     core_rows = cursor.fetchall()
     core_info = {row[0]: json.loads(row[1]) for row in core_rows}
 
-    # --- FETCH DOMINANT CORE ---
+    # Assign a "dominant core" for tree rooting: the core with the most final kmers extending it
     cursor.execute("""
         SELECT core_kmer, COUNT(*) as c 
         FROM final_kmer_info 
@@ -84,10 +72,10 @@ def get_cluster_data_from_db(db_path, human_id):
         "dominant_core": dominant_core
     }
 
-# ---------- TREE CONSTRUCTION HELPERS ----------
+# Tree Construction and MSA functions
 
 def run_muscle_msa(records):
-    """Perform MSA using MUSCLE via subprocess."""
+    """Perform MSA using MUSCLE"""
     with tempfile.TemporaryDirectory() as tmpdir:
         input_fasta = f"{tmpdir}/input.fasta"
         output_fasta = f"{tmpdir}/aligned.fasta"
@@ -104,7 +92,7 @@ def run_muscle_msa(records):
         return alignment
 
 def generate_tree_and_msa(final_kmers, core_kmer, kmer_to_name):
-    """Builds a tree rooted at core_kmer and returns ASCII string + Alignment string."""
+    """Build a tree rooted at core_kmer and return ASCII string + Alignment string."""
     records = []
     if core_kmer:
         name = kmer_to_name.get(core_kmer, "CORE")
@@ -119,11 +107,9 @@ def generate_tree_and_msa(final_kmers, core_kmer, kmer_to_name):
         return "Not enough sequences to build a tree.", ""
 
     try:
-        # 1. Align
         alignment = run_muscle_msa(records)
         
-        # 2. Format MSA (Single Block, Correctly Aligned)
-        # We prepare the labels first to calculate the correct padding width
+        # Prepare the labels first to calculate the correct padding width
         msa_rows = []
         for rec in alignment:
             label = rec.id
@@ -141,37 +127,36 @@ def generate_tree_and_msa(final_kmers, core_kmer, kmer_to_name):
             msa_lines.append(f"{padded_id} {row['seq']}")
         msa_str = "\n".join(msa_lines)
 
-        # 3. Build Tree
+        # Build Tree
         calculator = DistanceCalculator('identity')
         dm = calculator.get_distance(alignment)
         constructor = DistanceTreeConstructor()
         tree = constructor.nj(dm)
 
-        # 4. Root Tree
+        # Root Tree
         if core_kmer:
             root_clade = next((c for c in tree.find_clades() if c.name == "Core_Motif"), None)
             if root_clade:
                 tree.root_with_outgroup(root_clade)
                 tree.ladderize()
 
-        # 5. Draw to String
+        # Draw to String
         f = io.StringIO()
-        # Increased to 1000 to strictly prevent truncation of long sequences
         Phylo.draw_ascii(tree, file=f, column_width=150) 
         tree_str = f.getvalue()
         
         if core_kmer:
             tree_str = tree_str.replace("CORE", f"{core_kmer} (Core)")
-            # Note: We do NOT replace in msa_str here, because we handled it above
             
         return tree_str, msa_str
+    
     except Exception as e:
         return f"Error building tree: {e}. (Is MUSCLE installed?)", ""
 
-# ---------- THE VISUAL CORE ----------
+# Sequence Visualization
 
 def make_span_blocks_for_lane(chunk_local_start, chunk_local_end, lane_intervals):
-    """Creates a single HTML row for a specific lane (rectangles above sequence)."""
+    """Create a single HTML row for a specific lane (rectangles above sequence)."""
     chunk_len = chunk_local_end - chunk_local_start
     mask = [None] * chunk_len 
     
@@ -198,7 +183,7 @@ def make_span_blocks_for_lane(chunk_local_start, chunk_local_end, lane_intervals
     return "".join(html_line)
 
 def highlight_sequence_text(chunk_seq, chunk_local_start, chunk_local_end, core_occurrences):
-    """Wraps nucleotides in HTML spans to highlight core kmers."""
+    """Wrap nucleotides in HTML spans to highlight core kmers."""
     seq_len = len(chunk_seq)
     char_colors = [None] * seq_len
     
@@ -226,13 +211,13 @@ def highlight_sequence_text(chunk_seq, chunk_local_start, chunk_local_end, core_
     return "".join(html_out)
 
 def get_core_colors(core_seqs):
-    """Assigns colors to core kmers."""
+    """Assign colors to core kmers."""
     if len(core_seqs) == 1:
         return {core_seqs[0]: "#F90707"} 
     MULTI_PALETTE = ["#F90303", "#3805F2", "#01FB01", "#F57B00", "#7D03F7", "#F8F802"]
     return {k: MULTI_PALETTE[i % len(MULTI_PALETTE)] for i, k in enumerate(sorted(core_seqs))}
 
-# ---------- MAIN HTML BUILD ----------
+# Build HTML Report
 
 def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100):
     chrom, start, stop = db_data['chrom'], db_data['start'], db_data['end']+1
@@ -250,23 +235,17 @@ def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100
     if db_data['dominant_core'] not in kmer_to_name:
         kmer_to_name[db_data['dominant_core']] = "Core_Motif"
     
-    # Colors
-    #PASTEL_PALETTE = ["#FFB3BA", "#F1BAFF", "#FFFFBA", "#BAFFC9", "#BAE1FF", "#D4A5A5", "#FFC8A2", "#E2F0CB", "#B5EAD7", "#C7CEEA", "#F3D1DC", "#A8E6CF"]
+    # Color Palette
     ROCKET_CATEGORICAL = [
         "#fde293", "#e26d8d", "#fba973", "#c882a4", 
         "#ffeda0", "#fa7b67", "#fbb4b9", "#fd8d3c", 
         "#df65b0", "#ffc5a1", "#a4739d", "#f4858e"
     ]
-    #kmer_colors = {k: ROCKET_CATEGORICAL[i % len(ROCKET_CATEGORICAL)] for i, k in enumerate(final_seqs)}
     kmer_colors = {}
     for i, k in enumerate(final_seqs):
         if i < len(ROCKET_CATEGORICAL):
-            # 1. Use your predefined Rocket colors for the first 12
             kmer_colors[k] = ROCKET_CATEGORICAL[i]
         else:
-            # 2. For 13+, constrain colors to the "Rocket" zone (Purple to Yellow)
-            # The safe window is from 270 degrees up to 420 degrees (which wraps to 60)
-            # We use the Golden Ratio fraction (0.618) to pick widely separated hues inside this window
             fraction = (i * 0.6180339887) % 1.0
             hue = int(270 + (fraction * 150)) % 360
             
@@ -278,7 +257,7 @@ def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100
 
     record_dict = SeqIO.to_dict(SeqIO.parse(fasta_path, "fasta"))
     if chrom not in record_dict:
-        print(f"❌ FASTA Error: Could not find '{chrom}'.")
+        print(f"FASTA Error: Could not find '{chrom}'.")
         sys.exit(1)
     full_seq = str(record_dict[chrom].seq).upper()
     
@@ -368,7 +347,6 @@ def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100
         html_parts.append("<table class='metrics-table'><tr>")
         for label in m_labels: html_parts.append(f"<th>{label}</th>")
         html_parts.append("</tr><tr>")
-        #html_parts.append(f"<td>{metrics[0]}</td>") 
         wrapped_rep = wrap_text(str(metrics[0]), 70)
         html_parts.append(f"<td>{wrapped_rep}</td>")
         for val in metrics[1:]:
@@ -376,17 +354,17 @@ def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100
             html_parts.append(f"<td>{display_val}</td>")
         html_parts.append("</tr></table>")
 
-    # --- PHYLOGENETICS SECTION ---
+    # PHYLOGENETIC TREE 
     if final_seqs:
-        print("🌳 Building tree and MSA...")
+        print("Building tree and MSA...")
         tree_ascii, msa_str = generate_tree_and_msa(final_seqs, db_data['dominant_core'], kmer_to_name)
         
-        # Combine all unique sequences we want to colorize
+        # Combine all unique sequences 
         all_seqs = list(final_seqs)
         if db_data['dominant_core'] and db_data['dominant_core'] not in all_seqs:
             all_seqs.append(db_data['dominant_core'])
             
-        # Sort by name length descending to avoid partial string replacement bugs
+        # Sort by name length descending 
         all_seqs.sort(key=lambda x: len(kmer_to_name[x]), reverse=True)
         
         for seq in all_seqs:
@@ -414,7 +392,7 @@ def build_html(fasta_path, human_id, org_name, db_data, out_html, chunk_size=100
 
     with open(out_html, "w", encoding="utf8") as f:
         f.write("".join(html_parts))
-    print(f"✅ Visualization generated: {out_html}")
+    print(f"Visualization generated: {out_html}")
 
 def main():
     parser = argparse.ArgumentParser(description="DB-Driven HTML Cluster Reports.")
@@ -424,6 +402,13 @@ def main():
     parser.add_argument("--org", required=True)
     parser.add_argument("--out", default="report.html")
     parser.add_argument("--chunk", type=int, default=100)
+    
+    if len(sys.argv) == 1:
+        print("\nWelcome to a script used for HTML Visualization of Kmer Clusters!")
+        print("You need to provide input files and parameters.\n")
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    
     args = parser.parse_args()
 
     data = get_cluster_data_from_db(args.db, args.id)
