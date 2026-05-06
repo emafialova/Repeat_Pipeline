@@ -88,7 +88,7 @@ def filter_database(db_path, out_bed, out_csv, target_chrom, outdir):
             chrom_passed[bed_cols].assign(score=0, strand='+').to_csv(bed_out, sep='\t', header=False, index=False)
 
             # Save Detailed TSV 
-            details_out = os.path.join(chrom_folder, "filtered_clusters_details.tsv")
+            details_out = os.path.join(chrom_folder, "FINAL_clusters_details.tsv")
             with open(details_out, 'w') as f:
                 for _, row in chrom_passed.iterrows():
                     meta = (f"rep={row['rep_sequence']};gc={row['gc']};cons={row['cons']};"
@@ -111,8 +111,8 @@ def filter_database(db_path, out_bed, out_csv, target_chrom, outdir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Filter cluster database and output a BED file and Rejection CSV.")
     parser.add_argument("--db", required=True, help="Path to the SQLite database")
-    parser.add_argument("--bed", default="filtered_clusters.bed", help="Output path for the clean BED file")
-    parser.add_argument("--csv", default="rejected_clusters_audit.csv", help="Output path for the rejected clusters CSV")
+    parser.add_argument("--bed", default="FINAL_clusters.bed", help="Output path for the clean BED file")
+    parser.add_argument("--csv", default="rejected_clusters.csv", help="Output path for the rejected clusters CSV")
     parser.add_argument("--chromosome", default=None, help="Specific chromosome to filter by (optional)")
     parser.add_argument("--outdir", required = True, help="Directory to save output files (will be organized by chromosome)")
     

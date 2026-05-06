@@ -143,14 +143,14 @@ Below is a self dotplot generated using the YASS program [2] with default parame
 
 ![Dotplot AKT2](Images/Dotplot_AKT2.png) 
 
-The sequence of this gene is available in the folder `test_data`, results of the pipeline generated for this gene are available in the folder `test_results`. Final clusters bed file is called: `5_Clusters.bed`, database with all clusters is available as `clusters_AKT2.db`.
+The sequence of this gene is available in the folder `test_data`, results of the pipeline generated for this gene are available in the folder `test_results`. Final clusters bed file is called: `FINAL_clusters.bed`, database with all clusters is available as `clusters_AKT2.db`.
 
 ### Results Details
 The information about clusters identified and analyzed by this pipeline is automatically loaded into the prepared database. It can be accessed via command line using sqlite3. The database stores information for all clusters across all chromosomes.
 
 Moreover, for each sequence/chromosome, two output files, which store the information, are generated:
-- bed file which stores information about position of a cluster and a cluster ID `5_Clusters.bed`
-- tsv file with cluster information `5_Clusters_details.tsv`
+- bed file which stores information about position of a cluster and a cluster ID `FINAL_clusters.bed`
+- tsv file with cluster information `FINAL_clusters_details.tsv`
 The bed file can be loaded into standard bioinformatic tools such as UCSC Genome Browser as custom track, allowing the user to see the positions of the clusters. 
 
 The statistics calculated for each cluster present in both database and the tsv file include:
@@ -187,6 +187,9 @@ The generated HTML is split into five parts:
 
 ![HTML vis - part 1 AKT2](Images/HTML_parts_A-B.png)
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
+
+### Summary barchart 
+For each genome analysed in the master's thesis, there is a bar chart of the normalized cluster densities presented. These were generated using the script `./data_manipulation/Summary_plot.py`
 
 ## Troubleshooting
 The expected run time for a whole genome sequence if utilizing 10 workers is approximately 24 hours. This may vary based on the length and complexity of the DNA sequence.

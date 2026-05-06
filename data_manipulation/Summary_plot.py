@@ -23,7 +23,7 @@ def get_genome_data(fasta_path):
         sys.exit(1)
     return data
 
-def process_directory(base_dir, genome_data_dict, species_label, target_filename="filtered_clusters.tsv"):
+def process_directory(base_dir, genome_data_dict, species_label, target_filename="FINAL_clusters.tsv"):
     """
     Scans a directory for chromosome folders, counts clusters, and returns detailed stats.
     """
@@ -111,35 +111,26 @@ def calculate_group_stats(data_list, g1, g2):
 
 def main():
     parser = argparse.ArgumentParser(description="Compare Cluster Density: Chicken vs Human")
-    parser.add_argument("--dataset_1_dir", required=True, help="Path to Dataset 1 results folder")
-    parser.add_argument("--dataset_1_fasta", required=True, help="Path to Dataset 1 genome FASTA")
-    # Optional Arguments
-    parser.add_argument("--dataset_2_dir", help="Path to Dataset 2 results folder", default=None)
-    parser.add_argument("--dataset_2_fasta", help="Path to Dataset 2 genome FASTA", default=None)
-    
-    if len(sys.argv) == 1:
-        print("\nWelcome to a script ready for comprehensive summary statistics and bar charts!")
-        print("You need to provide input files and parameters.\n")
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-    
+    parser.add_argument("--chicken_dir", required=True, help="Path to Chicken results folder")
+    parser.add_argument("--chicken_fasta", required=True, help="Path to Chicken genome FASTA")
+    parser.add_argument("--second_dir", required=True, help="Path to Human results folder")
+    parser.add_argument("--second_fasta", required=True, help="Path to Human genome FASTA")
+
     args = parser.parse_args()
 
     # Load Genome Data (Length + GC)
-    data1_info = get_genome_data(args.dataset_1_fasta)
-    if args.dataset_2_dir and args.dataset_2_fasta:
-        data2_info = get_genome_data(args.dataset_2_fasta)
+    chicken_info = get_genome_data(args.chicken_fasta)
+    second_info = get_genome_data(args.second_fasta)
 
     # Process Data
-    data1 = process_directory(args.dataset_1_dir, data1_info, "Dataset 1")
-    if data2_info:
-        data2 = process_directory(args.dataset_2_dir, data2_info, "Dataset 2")
+    chicken_data = process_directory(args.chicken_dir, chicken_info, "Chicken")
+    second_data = process_directory(args.second_dir, second_info, "Human")
 
-    # 3. Define Groups & Colors
-    GG_macro = ['CP100555.1', 'CP100556.1', 'CP100557.1', 'CP100558.1', 'CP100559.1', 'CP100560.1', 'CP100561.1', 'CP100562.1', 'CP100563.1', 'CP100594.1'] 
-    GG_micro = ['CP100564.1', 'CP100565.1', 'CP100566.1', 'CP100567.1', 'CP100568.1', 'CP100569.1', 'CP100571.1', 'CP100572.1', 'CP100573.1', 'CP100574.1', 'CP100575.1', 'CP100576.1', 'CP100577.1', 'CP100578.1', 'CP100579.1', 'CP100580.1', 'CP100581.1', 'CP100582.1', 'CP100587.1'] 
+    # Define Chromosomal Groups for selected genomes
+    chicken_group_1 = ['CP100555.1', 'CP100556.1', 'CP100557.1', 'CP100558.1', 'CP100559.1', 'CP100560.1', 'CP100561.1', 'CP100562.1', 'CP100563.1', 'CP100594.1'] 
+    chicken_group_2 = ['CP100564.1', 'CP100565.1', 'CP100566.1', 'CP100567.1', 'CP100568.1', 'CP100569.1', 'CP100571.1', 'CP100572.1', 'CP100573.1', 'CP100574.1', 'CP100575.1', 'CP100576.1', 'CP100577.1', 'CP100578.1', 'CP100579.1', 'CP100580.1', 'CP100581.1', 'CP100582.1', 'CP100587.1'] 
     
-    GG_color_1, GG_color_2, GG_color_3 = "#c6dbef", "#6baed6", "#1f77b4"
+    c_color_1, c_color_2, c_color_3 = "#c6dbef", "#6baed6", "#1f77b4"
 
     other_group_macro_dn = ['NC_088098.1', 'NC_088099.1', 'NC_088100.1', 'NC_088101.1', 'NC_088102.1', 'NC_088103.1', 'NC_088104.1', 'NC_088105.1', 'NC_088106.1', 'NC_088107.1', 'NC_088130.1', 'NC_088132.1'] 
     other_group_micro_dn = ['NC_133029.1', 'NC_133034.1', 'NC_133035.1', 'NC_133036.1', 'NC_133037.1', 'NC_133038.1', 'NC_133039.1', 'NC_133040.1', 'NC_133041.1', 'NC_133042.1', 'NC_133043.1', 'NC_133044.1', 'NC_133045.1', 'NC_133046.1', 'NC_133047.1', 'NC_133048.1', 'NC_133049.1', 'NC_133050.1', 'NC_133051.1']
@@ -151,38 +142,39 @@ def main():
     mapping = {key:i+1 for i,key in enumerate(other_group_macro+cm_rest)}
     print(mapping)
     
-    # 4. Calculate and Print Stats Table
-    calculate_group_stats(data1, GG_macro, GG_micro)
-    #calculate_group_stats(data2, other_group_macro, other_group_micro)
-    if data2_info and not other_group_macro_dn and not other_group_micro_dn:
-        calculate_group_stats(data2, [], [])
+    # Calculate and Print Stats Table
+    calculate_group_stats(chicken_data, chicken_group_1, chicken_group_2)
+    #calculate_group_stats(human_data, other_group_macro, other_group_micro)
+    calculate_group_stats(second_data, other_group_macro, cm_rest)
 
-    #o_color_1, o_color_2, o_color_3 = "#9dff97", "#47af2b", "#2EBE48"
-    TG_color_1, TG_color_2, TG_color_3 = "#f38763", "#e74629", "#941305"
-    Homo_sapiens_color = "#f69ae7"
-    AM_color = "#f88a0d"
-    DP_color = "#D9FF00"
-    CM_color_1 = "#A37EEA"
-    CM_color_2 = "#7D3EF0"
+    # Colors for selected genomes 
+    o_color_1, o_color_2, o_color_3 = "#9dff97", "#47af2b", "#2EBE48"
+    o_color_1, o_color_2, o_color_3 = "#f38763", "#e74629", "#941305"
+    h_color = "#f69ae7"
+    am_color = "#f88a0d"
+    dp_color = "#D9FF00"
+    cm_color_1 = "#A37EEA"
+    cm_color_2 = "#7D3EF0"
 
-    macro_densities = [item['density'] for item in data1 if item['chr'] in chicken_group_1]
-    micro_densities = [item['density'] for item in data1 if item['chr'] in chicken_group_2]
-    dot_densities = [item['density'] for item in data1 if item['chr'] not in chicken_group_1 + chicken_group_2]
+    macro_densities = [item['density'] for item in chicken_data if item['chr'] in chicken_group_1]
+    micro_densities = [item['density'] for item in chicken_data if item['chr'] in chicken_group_2]
+    dot_densities = [item['density'] for item in chicken_data if item['chr'] not in chicken_group_1 + chicken_group_2]
 
     avg_macro = sum(macro_densities) / len(macro_densities) if macro_densities else 0
     avg_micro = sum(micro_densities) / len(micro_densities) if micro_densities else 0
     avg_dot = sum(dot_densities) / len(dot_densities) if dot_densities else 0
     
-    # 5. Plotting Prep
-    data1.sort(key=lambda x: x['chr']) 
+    # Plotting Prep
+    chicken_data.sort(key=lambda x: x['chr']) 
     #sort human data based on mapping
-    data2.sort(key=lambda x: mapping.get(x['chr'], float('inf')))
+    second_data.sort(key=lambda x: mapping.get(x['chr'], float('inf')))
     all_chromosomes, all_densities, bar_colors = [], [], []
 
-    #all_chromosomes = ["GG_Avg_Macro", "GG_Avg_Micro", "GG_Avg_Dot"]
-    #all_densities = [avg_macro, avg_micro, avg_dot]
-    #bar_colors = [c_color_1, c_color_2, c_color_3]
-
+    all_chromosomes = ["GG_Avg_Macro", "GG_Avg_Micro", "GG_Avg_Dot"]
+    all_densities = [avg_macro, avg_micro, avg_dot]
+    bar_colors = [c_color_1, c_color_2, c_color_3]
+    
+    # Chromosome lists for selected genomes
     gg_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,"Z","W"]
     hs_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X","Y"]
     dn_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,33,30,31,"W",32,"Z",34,35,36,37,38,39]
@@ -190,49 +182,37 @@ def main():
     am_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
     dp_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
     cm_chromosome_numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]
-    for item in data1:
-        all_chromosomes.append(item['chr'])
-        all_densities.append(item['density'])
-        if item['chr'] in chicken_group_1:
-            bar_colors.append(c_color_1)
-        elif item['chr'] in chicken_group_2:
-            bar_colors.append(c_color_2)
+    
+    # For Full Chromosomal Chicken Data
+    #for item in chicken_data:
+    #    all_chromosomes.append(item['chr'])
+    #    all_densities.append(item['density'])
+    #    if item['chr'] in chicken_group_1:
+    #        bar_colors.append(c_color_1)
+    #    elif item['chr'] in chicken_group_2:
+    #        bar_colors.append(c_color_2)
+    #    else:
+    #        bar_colors.append(c_color_3)
+    
+    for i, item in enumerate(second_data):
+        # Try to get the friendly name from dn_chromosome_numbers list
+        if i < len(cm_chromosome_numbers):
+            friendly_name = str(cm_chromosome_numbers[i])
         else:
-            bar_colors.append(c_color_3)
-    #for i, item in enumerate(data2):
-    #    # We try to get the friendly name from dn_chromosome_numbers list
-    #    # If the list is shorter than the data, we fall back to the ID
-    #    if i < len(cm_chromosome_numbers):
-    #        friendly_name = str(cm_chromosome_numbers[i])
-    #    else:
-    #        friendly_name = item['chr']
-    #        
-    #    all_chromosomes.append(friendly_name)
-    #    all_densities.append(item['density'])
-    #    if item['chr'] in other_group_macro:
-    #        bar_colors.append(Chelonia_mydas_color_1)
-    #    elif item['chr'] in other_group_micro:
-    #        bar_colors.append(o_color_2)
-    #    else:
-    #        bar_colors.append(cm_color_2)
-    #    #bar_colors.append("#f69ae7") 
-    ## Add Human Data (Stay compatible with structure)
-    #for item in human_data:
-    #    #all_chromosomes.append(item['chr'])
-    #    all_densities.append(item['density'])
-    #    #if item['chr'] in other_group_macro:
-    #    #    bar_colors.append(o_color_1)
-    #    #elif item['chr'] in other_group_micro:
-    #    #    bar_colors.append(o_color_2)
-    #    #else:
-    #    #    bar_colors.append(o_color_3)
-    #    bar_colors.append("#f69ae7") 
+            friendly_name = item['chr']
+           
+        all_chromosomes.append(friendly_name)
+        all_densities.append(item['density'])
+        if item['chr'] in other_group_macro:
+            bar_colors.append(cm_color_1)
+        elif item['chr'] in other_group_micro:
+            bar_colors.append(o_color_2)
+        else:
+            bar_colors.append(cm_color_2)
 
     plt.figure(figsize=(max(10, len(all_chromosomes)*0.3), 8)) 
     plt.bar(all_chromosomes, all_densities, color=bar_colors, edgecolor='black')
-    
-    #plt.xticks(range(len(all_chromosomes)), all_chromosomes, fontsize=10)
-    
+        
     # Get current axes and modify the first 3 labels
     ax = plt.gca()
     for i, label in enumerate(ax.get_xticklabels()):
@@ -249,15 +229,15 @@ def main():
         #Line2D([0], [0], color=o_color_1, lw=6, label='TG - Macrochromosomes'),
         #Line2D([0], [0], color=o_color_2, lw=6, label='TG - Microchromosomes'),
         #Line2D([0], [0], color=o_color_3, lw=6, label='TG - Dot crochromosomes')
-        #Line2D([0], [0], color=cm_color_1, lw=6, label='CM - Macrochromosomes'),
-        #Line2D([0], [0], color=cm_color_2, lw=6, label='CM - Microchromosomes'),
+        Line2D([0], [0], color=cm_color_1, lw=6, label='CM - Macrochromosomes'),
+        Line2D([0], [0], color=cm_color_2, lw=6, label='CM - Microchromosomes'),
     ]
     plt.legend(handles=legend_elements)
     plt.xlabel("Chromosome", fontsize=16); plt.ylabel("Clusters per Mbp", fontsize=16)
     plt.title("Cluster Density: Chelonia midas", fontsize=20); 
     #plt.xticks(rotation=0, fontsize=10)
     plt.tight_layout()
-    plt.savefig("comparison_cluster_density_colored_test.png")
+    plt.savefig("comparison_cluster_density_colored_CM.png")
     print(f"Plot saved.")
 
 if __name__ == '__main__':
