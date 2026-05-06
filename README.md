@@ -5,6 +5,16 @@ This Nextflow-based pipeline can be used to identify and analyze highly repetiti
 
 Avian genomes exhibit distinct characteristics, shaped by extensive adaptations during their evolution within the dinosaur lineage. For a long time, a number of genes were believed to be evolutionarily lost in avian genomes. However, recent studies suggest that many of these genes are not truly absent but rather located in regions that are technically difficult to analyze—such as microchromosomes. These regions are characterized by high GC content and a high density of repetitive elements, including the sequence stuttering phenomenon. These characteristics may contribute to genomic instability and their further analysis can provide insights into mechanisms of evolutionary change and selection. To address this need, a specialized computational pipeline capable of the identification and analysis of repetitive features, including the sequence stuttering phenomenon, has been developed. 
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Input](#input)
+- [Output](#output)
+- [Parameters](#parameters)
+- [Example Usage](#example-usage)
+- [Citation](#citation)
+- [Contact](#contact)
+
 ## Features
 - localizes imperfect repeats
 - thresholds adaptable to a given usecase
@@ -157,6 +167,12 @@ The generated HTML is split into five parts:
 
 ## Summary
 This repository presents a specialized computational pipeline capable of performing a systematic analysis of complex repetitive regions. The pipeline provides a robust framework for repetitive cluster analysis, offering outputs in the form of a database as well as standardized bioinformatic BED file format. Furthermore, the user is also able to generate an HTML report with detailed information about the repetitive cluster. Ultimately, this pipeline serves as a key tool for the analysis of repetitive regions, providing valuable insights that were previously obscured. 
+
+## Citation
+If you use this pipeline, please cite:
+
+Fialová, E. (2026). *Repetitive Elements and Stutter Genes in Avian Genomes*. Master's thesis, 
+[Univeristy of Chemistry and Technology, Prague, Czech Republic].
 
 ## Contact
 For any questions or support, please contact:
