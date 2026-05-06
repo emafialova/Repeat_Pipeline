@@ -10,7 +10,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "./zhash-c/src/zhash.h"
+#include "./zhash-c1/src/zhash.h"
 #include <pthread.h>
 #include <stdatomic.h> 
 #include <stddef.h>
@@ -21,6 +21,7 @@ const char NT_letter_arr[5] = {'A','T','C','G','N'};
 typedef uint64_t word_t;  // 64-bit unsigned integer
 
 int length = 5;
+
 // THE FOLLOWING WORKS FOR LINUX, the one below for mac os
 /*
 int compare_indexed_doubles_desc(const void *a, const void *b, void *arr_ptr) {
@@ -46,8 +47,6 @@ static int compare_indexed_doubles_desc(void *arr_ptr, const void *a, const void
     return 0;
 }
 
- //* Returns the indices of the 4 elements in descending order (largest first).
- 
 void sort_indices_4(const double arr[4], size_t indices[4]) {
     for (size_t i = 0; i < 4; i++)
         indices[i] = i;
@@ -1136,7 +1135,7 @@ int main(int argc, char *argv[]) {
     
     clock_gettime(CLOCK_MONOTONIC, &tot_end);
     double total_elapsed = (tot_end.tv_sec - tot_start.tv_sec) + (tot_end.tv_nsec - tot_start.tv_nsec)/1e9;
-    fprintf(stderr, "\n✅ All regions processed successfully in %.2f minutes (%.2f seconds).\n",
+    fprintf(stderr, "\nAll regions processed successfully in %.2f minutes (%.2f seconds).\n",
             total_elapsed/60.0, total_elapsed);
 
     // free tasks

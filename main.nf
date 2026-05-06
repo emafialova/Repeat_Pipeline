@@ -31,7 +31,7 @@ script_clusters      = file("${projectDir}/scripts/5_Clustering.py")
 
 // C Files
 script_c_main        = file("${projectDir}/scripts/3_Extension.c")
-dir_c_hash           = file("${projectDir}/scripts/zhash-c")
+dir_c_hash           = file("${projectDir}/scripts/zhash-c1")
 
 // ---------------------------------------------------------
 // 3. Workflow Definition

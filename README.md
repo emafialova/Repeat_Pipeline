@@ -27,7 +27,7 @@ To address this need, a specialized computational pipeline capable of the identi
 ### Prerequisites
 Before running the pipeline, ensure the following core tools are installed on your system:
 * **[Conda](https://docs.conda.io/en/latest/miniconda.html)** (Miniconda or Anaconda) to manage dependencies.
-* **[Nextflow](https://www.nextflow.io/docs/latest/getstarted.html)** (version 22.0+) to execute the workflow.
+* **[Nextflow](https://docs.seqera.io/nextflow/install)** (version 22.0+) to execute the workflow.
 * **Python** (3.10+)
 
 ### Environment Set Up
@@ -44,8 +44,9 @@ conda activate pipeline_env
 ### Database Initialization (Required)
 Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
 ```bash
-python scripts/00_db_prep.py path/to/db
+python scripts/00_db_prep.py path/to/db.db
 ```
+It is recommended to store the database in a Results folder and use .db extension (e.g. ./Results/clusters.db)
 
 ### Parallel Run for Whole Genome Analysis
 For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `run_all_chr_mp.py`
