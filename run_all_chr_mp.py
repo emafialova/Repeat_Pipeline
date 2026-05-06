@@ -34,6 +34,10 @@ def process_chromosome(chrom, arguments, base_dir):
         ]
     if arguments.mapping:
         cmd.extend(["--mapping", os.path.abspath(arguments.mapping)])
+    if arguments.start is not None:
+        cmd.extend(["--start", str(arguments.start)])
+    if arguments.end is not None:
+        cmd.extend(["--end", str(arguments.end)])
 
     try:
         # check=True raises an error if the pipeline fails
@@ -51,6 +55,8 @@ def main():
     parser.add_argument("--db_path", required=True, help="Path to the SQLite database.")
     parser.add_argument("--org", required=True, help="Organism name (e.g., 'Gallus gallus').")
     # Optional Arguments
+    parser.add_argument("--start", help="Start position for analysis (default: 0).", type=int, default=0)
+    parser.add_argument("--end", help="End position for analysis (default: entire sequence).", type=int, default=None)
     parser.add_argument("--mapping", help="Path to KEGG mapping file (defaults to KEGG_mapping.txt in repo).", default=None)
     parser.add_argument("--sequence_id", help="Name of analyzed sequence. Default is chromosome ID.", default=None)
     parser.add_argument("--chr_list", help="Optional: Comma-separated list of chromosome IDs to process (overrides fasta parsing).", default=None)

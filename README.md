@@ -122,7 +122,7 @@ Below is a self dotplot generated using the YASS program [2] with default parame
 
 ![Dotplot AKT2](Images/Dotplot_AKT2.png) 
 
-The sequence of this gene is available in the folder `test_data`, results of the pipeline generated for this gene are available in the folder `test_results`. Final clusters bed file is called: `cluster_islands_C7_new.bed`, database with all clusters is available as `clusters_db_AKT2.db`.
+The sequence of this gene is available in the folder `test_data`, results of the pipeline generated for this gene are available in the folder `test_results`. Final clusters bed file is called: `5_Clusters.bed`, database with all clusters is available as `clusters_AKT2.db`.
 
 ### Command
 The results were generated using the command below:
@@ -133,8 +133,8 @@ nextflow run main.nf
 The information about clusters identified and analyzed by this pipeline is automatically loaded into the prepared database. It can be accessed via command line using sqlite3. The database stores information for all clusters across all chromosomes.
 
 Moreover, for each sequence/chromosome, two output files, which store the information, are generated:
-- bed file which stores information about position of a cluster and a cluster ID `cluster_islands_C7_new.bed`
-- tsv file with cluster information `cluster_islands_C7_new_details.tsv`
+- bed file which stores information about position of a cluster and a cluster ID `5_Clusters.bed`
+- tsv file with cluster information `5_Clusters_details.tsv`
 The bed file can be loaded into standard bioinformatic tools such as UCSC Genome Browser as custom track, allowing the user to see the positions of the clusters. 
 
 The statistics calculated for each cluster present in both database and the tsv file include:
@@ -153,8 +153,8 @@ The statistics calculated for each cluster present in both database and the tsv 
 To visualize a specific cluster, it is necessary to locate its unique ID (e.g. GGA32-BA46CF24.01) in the fourth column of the output .bed file or in the database: field *human_id* in the table *Instances*.  
 HTML visualizations of selected clusters are available in the folder `test_results/HTML`, the following command was used to generate that of cluster **GGA32-BA46CF24.01**:
 ```bash
-python HTML_vis.py \
-    --db ./test_results/clusters_db_AKT2.db \
+python ./data_manipulation/HTML_vis.py \
+    --db ./test_results/clusters_AKT2.db \
     --fasta ./test_data/AKT2_seq.fasta \
     --id GGA32-BA46CF24.01 \
     --org "Gallus gallus" \

@@ -10,11 +10,10 @@ import multiprocessing as mp
 csv.field_size_limit(sys.maxsize)
 
 def find_reachable_leaves(start_node, edge_file):
-    """Iterative DFS on a directed graph loaded from edge_file, returns leaf nodes reachable from start_node."""
+    """Iterative DFS on a directed graph loaded from edge_file, return leaf nodes reachable from start_node."""
     graph = defaultdict(list)
     outdegree = defaultdict(int)
 
-    # --- Build graph ---
     with open(edge_file) as f:
         next(f)  # skip header 1
         next(f)  # skip header 2
@@ -62,7 +61,7 @@ def filter_leaf_nodes(leaf_node_set):
     return filtered_list
 
 def parse_region_from_tsv(tsv_file):
-    """Parses first header line 'gene|start|end|region_num' to extract region_start and region_end."""
+    """Parse first header line 'gene|start|end|region_num' to extract region_start and region_end."""
     with open(tsv_file) as f:
         header_line = f.readline().strip()
     parts = header_line.split('|')
@@ -159,9 +158,9 @@ def group_and_select_kmers(final_kmers, kmer_info):
         selected.append(best)
     return selected
 
-def filter_redundant_holistic(leaf_nodes, kmer_info):
+def filter_redundant(leaf_nodes, kmer_info):
     """
-    Holistic redundancy check: checks each kmer against the original set of others.
+    Check each kmer against the original set of others.
     Safeguards against mutual redundancy by ensuring we always keep one of a redundant pair.
     """
     nodes = list(leaf_nodes)
@@ -232,9 +231,7 @@ def process_region(region_id, region_tsv_file, region_abc_file):
         
         # Apply filters
         leaf_nodes_selected = group_and_select_kmers(leaf_nodes_final, region_kmer_info)
-        # Use the holistic redundancy check just like the standalone script
-        leaf_nodes_final_set = filter_redundant_holistic(leaf_nodes_selected, region_kmer_info)
-        
+        leaf_nodes_final_set = filter_redundant(leaf_nodes_selected, region_kmer_info)
         kmer_dict[kmer] = leaf_nodes_final_set
         
     print(f"  Finished Processing region file: {region_id}")
@@ -247,6 +244,8 @@ def main():
     parser.add_argument("--workers", type=int, default=4)
 
     if len(sys.argv) == 1:
+        print("\nWelcome to the fourth step focused on final kmer extraction!")
+        print("You need to provide input files and parameters.\n")
         parser.print_help(sys.stderr)
         sys.exit(1)
 
@@ -276,7 +275,7 @@ def main():
             if res:
                 out_f.write(f"{res[0]}\t{res[1]}\t{res[2]}\n")
     
-    print(f"\n✅ Processing completed. Output saved to: {args.output_file}")
+    print(f"\nProcessing completed. Output saved to: {args.output_file}")
 
 if __name__ == "__main__":
     main()

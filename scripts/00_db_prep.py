@@ -14,19 +14,22 @@ def initialize_global_database(db_path):
     # Enable WAL for parallel safety
     c.execute('PRAGMA journal_mode=WAL;')
 
-    # --- TABLE 1: INSTANCES ---
-    c.execute('''CREATE TABLE IF NOT EXISTS instances (
+    c.execute('''CREATE TABLE IF NOT EXISTS Hashes (
+        sequence TEXT , 
+        short_hash TEXT, 
+        full_hash TEXT PRIMARY KEY)''')
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS Instances (
         internal_id TEXT PRIMARY KEY, 
         chrom TEXT, 
         start_pos INTEGER, 
         end_pos INTEGER, 
         human_id TEXT,
-        short_hash TEXT,
-        full_hash TEXT
+        full_hash TEXT,
+        FOREIGN KEY(full_hash) REFERENCES Hashes(full_hash)
     )''')
 
-    # --- TABLE 2: CLUSTER DETAILS ---
-    c.execute('''CREATE TABLE IF NOT EXISTS cluster_details (
+    c.execute('''CREATE TABLE IF NOT EXISTS Cluster_details (
         internal_id TEXT PRIMARY KEY, 
         rep_sequence TEXT, 
         gc REAL, 
@@ -38,47 +41,39 @@ def initialize_global_database(db_path):
         region_size INTEGER, 
         kmer_num INTEGER,
         avg_occ REAL,
-        med_occ REAL
-    )''')
-    
-    # --- TABLE 3: KMERS ---
-    c.execute('''CREATE TABLE IF NOT EXISTS kmers (
-        internal_id TEXT PRIMARY KEY, 
-        kmer_list TEXT
+        med_occ REAL,
+        FOREIGN KEY(internal_id) REFERENCES Instances(internal_id)
     )''')
 
-    # --- TABLE 4: FINAL KMER INFO ---
-    c.execute('''CREATE TABLE IF NOT EXISTS final_kmer_info (
+    c.execute('''CREATE TABLE IF NOT EXISTS Core_kmer_info (
+        internal_id TEXT, 
+        core_seq TEXT, 
+        positions TEXT, 
+        PRIMARY KEY (internal_id, core_seq),
+        FOREIGN KEY(internal_id) REFERENCES Instances(internal_id)
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS Final_kmer_info (
         internal_id TEXT, 
         kmer_seq TEXT, 
         positions TEXT, 
         is_rep INTEGER,
         core_kmer TEXT,
-        FOREIGN KEY(internal_id) REFERENCES instances(internal_id)
+        PRIMARY KEY (internal_id, kmer_seq),
+        FOREIGN KEY(internal_id) REFERENCES Instances(internal_id),
+        FOREIGN KEY(internal_id, core_kmer) REFERENCES Core_kmer_info(internal_id, core_seq)
     )''')
-
-    c.execute('''CREATE TABLE IF NOT EXISTS hashes (
-        sequence TEXT PRIMARY KEY, 
-        short_hash TEXT, 
-        full_hash TEXT)''')
-    
-    c.execute('''CREATE TABLE IF NOT EXISTS core_kmer_info (
-        internal_id TEXT, 
-        core_seq TEXT, 
-        positions TEXT, 
-        FOREIGN KEY(internal_id) REFERENCES instances(internal_id)
-    )''')
-    
+ 
     # Essential Indexes 
-    c.execute("CREATE INDEX IF NOT EXISTS idx_human_id ON instances(human_id)")
-    c.execute("CREATE INDEX IF NOT EXISTS idx_full_hash ON instances(full_hash)")
-    c.execute("CREATE INDEX IF NOT EXISTS idx_kmer_lookup ON final_kmer_info(internal_id)")
-    c.execute("CREATE INDEX IF NOT EXISTS idx_hash_sequence ON hashes(sequence)")
-    c.execute("CREATE INDEX IF NOT EXISTS idx_core_lookup ON core_kmer_info(internal_id)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_human_id ON Instances(human_id)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_full_hash ON Instances(full_hash)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_kmer_lookup ON Final_kmer_info(internal_id)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_hash_sequence ON Hashes(sequence)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_core_lookup ON Core_kmer_info(internal_id)")
 
     conn.commit()
     conn.close()
-    print("✅ Database prepared and extended successfully.")
+    print("Database prepared and extended successfully.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Initialize the genomic cluster database with extended schema.")

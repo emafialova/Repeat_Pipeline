@@ -56,7 +56,7 @@ workflow {
     FINAL_NODES(EXTENSION.out, script_final_nodes)
 
     // F. Clusters
-    CLUSTERS(FINAL_NODES.out, EXTENSION.out, EXTRACT_SEQ.out, script_clusters)
+    CLUSTERS(FINAL_NODES.out, EXTENSION.out, input_sequence, script_clusters)
 }
 
 // ---------------------------------------------------------

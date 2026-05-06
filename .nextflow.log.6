@@ -1,0 +1,166 @@
+May-06 17:45:58.365 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+May-06 17:45:58.400 [main] DEBUG nextflow.cli.CmdRun - N E X T F L O W  ~  version 25.10.0
+May-06 17:45:58.417 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/emafialova/Projects/DP_Final/nextflow.config
+May-06 17:45:58.418 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/emafialova/Projects/DP_Final/nextflow.config
+May-06 17:45:58.428 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+May-06 17:45:58.595 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/emafialova/.nextflow/plugins; core-plugins: nf-amazon@3.4.1,nf-azure@1.20.2,nf-cloudcache@0.5.0,nf-codecommit@0.5.0,nf-console@1.3.0,nf-google@1.23.3,nf-k8s@1.2.2,nf-tower@1.17.1,nf-wave@1.16.1
+May-06 17:45:58.607 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+May-06 17:45:58.607 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+May-06 17:45:58.610 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+May-06 17:45:58.616 [main] DEBUG nextflow.util.RetryConfig - Missing nextflow session - using default retry config
+May-06 17:45:58.669 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+May-06 17:45:58.670 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+May-06 17:45:58.670 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+May-06 17:45:58.677 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/emafialova/.nextflow/secrets/store.json
+May-06 17:45:58.678 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@650ae78c] - activable => nextflow.secret.LocalSecretsProvider@650ae78c
+May-06 17:45:58.682 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+May-06 17:45:58.688 [main] DEBUG nextflow.cli.CmdRun - Launching `main.nf` [nauseous_mccarthy] DSL2 - revision: b334a5bb42
+May-06 17:45:58.708 [main] DEBUG nextflow.Session - Session UUID: ad725ec8-6c82-41a4-a5da-5302225eab39
+May-06 17:45:58.708 [main] DEBUG nextflow.Session - Run name: nauseous_mccarthy
+May-06 17:45:58.708 [main] DEBUG nextflow.Session - Executor pool size: 10
+May-06 17:45:58.711 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+May-06 17:45:58.712 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=30; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+May-06 17:45:58.726 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 25.10.0 build 0
+  Created: 22-10-2025 15:12 UTC (17:12 CEST)
+  System: Mac OS X 26.3.1
+  Runtime: Groovy 4.0.28 on OpenJDK 64-Bit Server VM 25.0.1
+  Encoding: UTF-8 (UTF-8)
+  Process: 90058@Emas-MacBook-Pro.local [127.0.0.1]
+  CPUs: 10 - Mem: 16 GB (71.1 MB) - Swap: 4 GB (1.4 GB)
+May-06 17:45:58.732 [main] DEBUG nextflow.Session - Work-dir: /Users/emafialova/Projects/DP_Final/work [Mac OS X]
+May-06 17:45:58.732 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/emafialova/Projects/DP_Final/bin
+May-06 17:45:58.736 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+May-06 17:45:58.739 [main] DEBUG nextflow.Session - Observer factory (v2): LinObserverFactory
+May-06 17:45:58.740 [main] DEBUG nextflow.Session - Observer factory (v2): DefaultObserverFactory
+May-06 17:45:58.753 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+May-06 17:45:58.757 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 11; maxThreads: 1000
+May-06 17:45:58.781 [main] DEBUG nextflow.Session - Session start
+May-06 17:45:59.010 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+May-06 17:45:59.063 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.064 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.067 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+May-06 17:45:59.069 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=10; memory=16 GB; capacity=10; pollInterval=100ms; dumpInterval=5m
+May-06 17:45:59.070 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+May-06 17:45:59.077 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'EXTRACT_SEQ': maxForks=0; fair=false; array=0
+May-06 17:45:59.096 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.096 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.097 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'COMPILE_C': maxForks=0; fair=false; array=0
+May-06 17:45:59.098 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.098 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.099 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'FULL_CHR': maxForks=0; fair=false; array=0
+May-06 17:45:59.100 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.100 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.101 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'ANALYZE_KMERS': maxForks=0; fair=false; array=0
+May-06 17:45:59.102 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.102 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.103 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'EXTENSION': maxForks=0; fair=false; array=0
+May-06 17:45:59.104 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.104 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.104 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'FINAL_NODES': maxForks=0; fair=false; array=0
+May-06 17:45:59.107 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+May-06 17:45:59.107 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+May-06 17:45:59.108 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CLUSTERS': maxForks=0; fair=false; array=0
+May-06 17:45:59.109 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: FULL_CHR, CLUSTERS, COMPILE_C, ANALYZE_KMERS, EXTENSION, EXTRACT_SEQ, FINAL_NODES
+May-06 17:45:59.110 [main] DEBUG nextflow.Session - Igniting dataflow network (8)
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > EXTRACT_SEQ
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > COMPILE_C
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FULL_CHR
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > ANALYZE_KMERS
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > EXTENSION
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FINAL_NODES
+May-06 17:45:59.112 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CLUSTERS
+May-06 17:45:59.112 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_c47030cfb9919301: /Users/emafialova/Projects/DP_Final/main.nf
+May-06 17:45:59.112 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+May-06 17:45:59.112 [main] DEBUG nextflow.Session - Session await
+May-06 17:45:59.160 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+May-06 17:45:59.165 [Task submitter] INFO  nextflow.Session - [23/3e7841] Submitted process > COMPILE_C
+May-06 17:45:59.593 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: COMPILE_C; status: COMPLETED; exit: 0; error: -; workDir: /Users/emafialova/Projects/DP_Final/work/23/3e7841be6ec5b4edce4bf4003d08a9]
+May-06 17:45:59.593 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'TaskFinalizer' minSize=10; maxSize=30; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+May-06 17:45:59.596 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+May-06 17:45:59.597 [Task submitter] INFO  nextflow.Session - [92/8e64bf] Submitted process > EXTRACT_SEQ (1)
+May-06 17:45:59.665 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: EXTRACT_SEQ (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/emafialova/Projects/DP_Final/work/92/8e64bf72d500b43f0136ff0f0da393]
+May-06 17:45:59.673 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+May-06 17:45:59.673 [TaskFinalizer-2] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'PublishDir' minSize=10; maxSize=30; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+May-06 17:45:59.673 [Task submitter] INFO  nextflow.Session - [35/fd43a1] Submitted process > FULL_CHR (1)
+May-06 17:45:59.881 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: FULL_CHR (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/emafialova/Projects/DP_Final/work/35/fd43a178795935e6851a35931d5212]
+May-06 17:45:59.887 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+May-06 17:45:59.887 [Task submitter] INFO  nextflow.Session - [4f/62aacb] Submitted process > ANALYZE_KMERS (1)
+May-06 17:46:00.026 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 4; name: ANALYZE_KMERS (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/emafialova/Projects/DP_Final/work/4f/62aacbf89e4489d78328e3798d4bb8]
+May-06 17:46:00.054 [TaskFinalizer-4] DEBUG nextflow.processor.TaskProcessor - Process ANALYZE_KMERS > Skipping output binding because one or more optional files are missing: fileoutparam<1>
+May-06 17:46:00.066 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+May-06 17:46:00.066 [Task submitter] INFO  nextflow.Session - [c3/1ee1d4] Submitted process > EXTENSION (1)
+May-06 17:46:00.621 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 5; name: EXTENSION (1); status: COMPLETED; exit: 1; error: -; workDir: /Users/emafialova/Projects/DP_Final/work/c3/1ee1d480eeaddc1950e0e54dceabe6]
+May-06 17:46:00.623 [TaskFinalizer-5] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=EXTENSION (1); work-dir=/Users/emafialova/Projects/DP_Final/work/c3/1ee1d480eeaddc1950e0e54dceabe6
+  error [nextflow.exception.ProcessFailedException]: Process `EXTENSION (1)` terminated with an error exit status (1)
+May-06 17:46:00.629 [TaskFinalizer-5] ERROR nextflow.processor.TaskProcessor - Error executing process > 'EXTENSION (1)'
+
+Caused by:
+  Process `EXTENSION (1)` terminated with an error exit status (1)
+
+
+Command executed:
+
+  # Ensure binary is executable
+  chmod +x 3_Extension
+  
+  # Make the output directory
+  mkdir -p C_trial_7_limit
+  
+  # Run the C program
+  ./3_Extension 2_Regions_of_interest.tsv CP100586.2_seq.fasta C_trial_7_limit 15
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Command error:
+  No regions found in input TSV
+
+Work dir:
+  /Users/emafialova/Projects/DP_Final/work/c3/1ee1d480eeaddc1950e0e54dceabe6
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+May-06 17:46:00.631 [TaskFinalizer-5] DEBUG nextflow.Session - Session aborted -- Cause: Process `EXTENSION (1)` terminated with an error exit status (1)
+May-06 17:46:00.631 [main] DEBUG nextflow.Session - Session await > all processes finished
+May-06 17:46:00.649 [TaskFinalizer-5] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=4; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=5.7s; failedDuration=4.9s; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=10; peakMemory=16 GB; ]
+May-06 17:46:00.717 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+May-06 17:46:00.717 [main] DEBUG nextflow.Session - Session await > all barriers passed
+May-06 17:46:00.718 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=4; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=5.7s; failedDuration=4.9s; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=10; peakMemory=16 GB; ]
+May-06 17:46:00.718 [TaskFinalizer-5] DEBUG nextflow.Session - null
+java.lang.InterruptedException: null
+	at java.base/java.lang.Object.wait0(Native Method)
+	at java.base/java.lang.Object.wait(Object.java:389)
+	at java.base/java.lang.Thread.join(Thread.java:1887)
+	at java.base/java.lang.Thread.join(Thread.java:1963)
+	at nextflow.trace.AnsiLogObserver.onFlowComplete(AnsiLogObserver.groovy:520)
+	at nextflow.Session$_notifyFlowComplete_lambda39.doCall(Session.groovy:1121)
+	at nextflow.Session.notifyEvent(Session.groovy:1151)
+	at nextflow.Session.notifyFlowComplete(Session.groovy:1121)
+	at nextflow.Session.shutdown0(Session.groovy:779)
+	at nextflow.Session.abort(Session.groovy:834)
+	at nextflow.Session.fault(Session.groovy:796)
+	at nextflow.processor.TaskPollingMonitor.finalizeTask(TaskPollingMonitor.groovy:753)
+	at nextflow.processor.TaskPollingMonitor.safeFinalizeTask(TaskPollingMonitor.groovy:736)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1339)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1094)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.processor.TaskPollingMonitor$_checkTaskStatus_lambda8.doCall(TaskPollingMonitor.groovy:726)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+May-06 17:46:00.841 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+May-06 17:46:00.866 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

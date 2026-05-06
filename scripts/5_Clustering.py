@@ -24,8 +24,6 @@ ALIGNER.mismatch_score = -1
 ALIGNER.open_gap_score = -2
 ALIGNER.extend_gap_score = -1
 
-# ------------------ ID GENERATION HELPERS ------------------
-
 def load_ready_mapping(mapping_path, target_org):
     target_org = target_org.lower()
     try:
@@ -49,6 +47,9 @@ def to_base36(n):
     return f"{chars[high]}{chars[low]}"
 
 def parse_fasta_chroms(fasta_path, pattern):
+    """
+    Find chromosome number/letter in FASTA header.
+    """
     info_regex = re.compile(r"chromosome\s+([^\s,;]+)", re.IGNORECASE)
     with open(fasta_path, 'r') as f:
         for line in f:
@@ -66,48 +67,9 @@ def parse_fasta_chroms(fasta_path, pattern):
                 break
     return "00"
 
-def get_or_update_hash_map(map_path, rep_seq):
-    seq = rep_seq.strip().upper()
-    # Generate the actual hashes for the current sequence
-    current_short_hash = hashlib.md5(seq.encode()).hexdigest()[:8].upper()
-    current_full_hash = hashlib.md5(seq.encode()).hexdigest().upper()
-    
-    # sequence -> (short, full)
-    seq_to_hashes = {}
-    # short_hash -> sequence (for collision detection)
-    short_hash_to_seq = {}
-
-    if os.path.exists(map_path):
-        with open(map_path, 'r') as f:
-            next(f) # Skip header
-            for line in f:
-                parts = line.strip().split('\t')
-                if len(parts) < 3: continue
-                s, h, fh = parts
-                seq_to_hashes[s] = (h, fh)
-                short_hash_to_seq[h] = s
-
-    # 1. If sequence already exists, return the stored TUPLE
-    if seq in seq_to_hashes:
-        return seq_to_hashes[seq]
-
-    # 2. Collision Check: Does this short hash belong to a DIFFERENT sequence?
-    if current_short_hash in short_hash_to_seq:
-        print(f"CRITICAL ERROR: Hash collision for {current_short_hash}!")
-        sys.exit(1)
-
-    # 3. New entry: Append to file
-    file_mode = 'a' if os.path.exists(map_path) else 'w'
-    with open(map_path, file_mode) as f:
-        if file_mode == 'w':
-            f.write("sequence\thash\tfull_hash\n")
-        f.write(f"{seq}\t{current_short_hash}\t{current_full_hash}\n")
-    
-    return current_short_hash, current_full_hash
-
 def get_db_hashes(cursor, rep_seq):
     """
-    Checks database for existing hash. If not found, generates and saves it.
+    Check database for existing hash. If not found, generates and saves it.
     This is parallel-safe when wrapped in a transaction.
     """
     seq = rep_seq.strip().upper()
@@ -125,7 +87,7 @@ def get_db_hashes(cursor, rep_seq):
                    (seq, short_h, full_h))
     return short_h, full_h
 
-# ------------------ DATA LOADING & ANALYSIS ------------------
+# DATA LOADING & ANALYSIS 
 
 def extract_all(final_nodes_file):
     """
@@ -153,10 +115,10 @@ def extract_all(final_nodes_file):
 
 def parse_tsv_info(region_tsv_file):
     """
-    Reads a region_Y.tsv produced by your program:
-    header line (gene|start|end|region_id)
-    header2 (column names)
-    then lines: kmer\tcount\tlength\tcompactness\tpositions\tstarting_kmer_flag
+    Reads a region_Y.tsv produced by the pipeline:
+    header line (chromosome|start|end|region_id)
+    header2 (column names: kmer\tcount\tlength\tcompactness\tpositions\tstarting_kmer_flag)
+    then records
     Returns dict: kmer -> (count:int, positions: List[int])
     """
     kmer_tsv_dict = {}
@@ -196,13 +158,6 @@ def parse_tsv_info(region_tsv_file):
 def filter_kmers_by_abc(region_kmer_dict, abc_path):
     """
     Filters out kmers that appear in the FIRST column of the abc file.
-    
-    Args:
-        region_kmer_dict (dict): {'core_kmer': [list_of_final_kmers]}
-        abc_path (str): path to region_*.abc file (3-column TSV)
-    
-    Returns:
-        dict: same structure as input, but with kmers removed if found in abc file's first column
     """
     if not os.path.exists(abc_path): return region_kmer_dict
     abc_firstcol = set()
@@ -231,6 +186,9 @@ def create_distance_matrix(sequences):
     return dist_matrix
 
 def find_representative(sequence_list, tsv_kmer_dict, dist_matrix, idxs):
+    """
+    Find representative sequence for a cluster of indices. First try the most frequent, if all the same, find a medoid.
+    """
     if not idxs: return None
     cluster_seqs = [sequence_list[i] for i in idxs]
     freqs = []
@@ -345,6 +303,9 @@ def merge_clusters_by_overlap(cluster_info):
 # ------------------ ANALYSIS ENGINE ------------------
 
 def analyze_region(region_index, region_tsv, region_directory, region, complete_sequence, sequence_id, region_name, region_start, region_end, region_kmer_dict, eps, min_s):
+    """
+    Analyze a single region: cluster kmers, find representatives, calculate metrics, and prepare data for DB insertion.
+    """
     print(f"  Started Processing region file: {region_index}")
     tsv_kmer_dict = parse_tsv_info(region_tsv)
     region_abc = os.path.join(region_directory, region + ".abc")
@@ -378,7 +339,7 @@ def analyze_region(region_index, region_tsv, region_directory, region, complete_
         counts = [tsv_kmer_dict.get(sequence_list[idx], (0,))[0] for idx in idxs]
 
         island_offset = m_start
-        # Extract Kmer Data for DB
+        # Extracting Kmer Data for DB
         kmer_data = []
         unique_cores_in_island = set()
         for idx in idxs:
@@ -434,22 +395,19 @@ def main():
     parser.add_argument("--workers", type=int, default=4)
     
     if len(sys.argv) == 1:
-        print("\nWelcome to the Kmer Clustering Tool!")
+        print("\nWelcome to Step five of the Kmer Clustering Pipeline!")
         print("You need to provide input files and parameters.\n")
         parser.print_help(sys.stderr)
         sys.exit(1)
     
     args = parser.parse_args()
 
-    # Initialize Context
     org_code = load_ready_mapping(args.mapping, args.org)
     c_code = parse_fasta_chroms(args.sequence_fasta, args.chromosome)
-    #c_code = chrom_map.get(args.chromosome, "00")
     suffix_tracker = Counter()
 
     # Run Multi-Processing
     all_regions, region_list = extract_all(args.final_nodes)
-    #record = SeqIO.read(args.sequence_fasta, "fasta")
     complete_seq = None
     for record in SeqIO.parse(args.sequence_fasta, "fasta"):
         if args.chromosome in record.id or args.chromosome in record.description:
@@ -470,7 +428,6 @@ def main():
     
     results = sorted([r for r in results if r], key=lambda x: x[0])
 
-    # ------------------ DB POPULATION & TRANSFORMED OUTPUT ------------------
     # SQL Transaction with 60s timeout for parallel chromosome runs
     conn = sqlite3.connect(args.db_path, timeout=60.0)
     cursor = conn.cursor()
@@ -481,11 +438,9 @@ def main():
         cursor.execute("BEGIN TRANSACTION")
         for _, r_start, r_end, island_info, r_id in results:
             for i_id, info in island_info.items():
-                abs_start, abs_end = r_start + info['start'], r_start + info['end']
-                #abs_start, abs_end = r_start, r_end
+                abs_start, abs_end = r_start + info['start'], r_start + info['end']                
                 
                 # ID Logic: GAL01-A1B2C3D4.01
-                #short_h, full_h = get_or_update_hash_map(args.hash_map, info['rep'])
                 short_h, full_h = get_db_hashes(cursor, info['rep'])
                 base_id = f"{org_code}{c_code}-{short_h}"
                 suffix_tracker[base_id] += 1
@@ -504,16 +459,14 @@ def main():
                 out_d.write(f"{human_id}\t{metric_str}\n{human_id}\t{','.join(info['all_cluster_seqs'])}\n")
 
                 # DB Insertion
-                cursor.execute("INSERT OR REPLACE INTO instances VALUES (?, ?, ?, ?, ?, ?, ?)",
-                               (internal_id, args.chromosome, abs_start, abs_end, human_id, short_h, full_h))
+                cursor.execute("INSERT OR REPLACE INTO instances VALUES (?, ?, ?, ?, ?, ?)",
+                               (internal_id, args.chromosome, abs_start, abs_end, human_id, full_h))
                 
                 cursor.execute("INSERT OR REPLACE INTO cluster_details VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                (internal_id, info['rep'], info['gc'], info['conservation'], info['median_length'], 
                                 info['avg_raw_sw'], info['avg_norm_sw'], info['coverage'], info['region_size'], 
                                 info['kmer_num'], info['avg_occ'], info['median_occ']))
                 
-                cursor.execute("INSERT OR REPLACE INTO kmers VALUES (?, ?)", (internal_id, ','.join(info['all_cluster_seqs'])))
-
                 for k in info['kmer_data']:
                     cursor.execute("INSERT INTO final_kmer_info VALUES (?, ?, ?, ?, ?)",
                                    (internal_id, k['seq'], json.dumps(k['pos']), k['is_rep'], k['core']))
@@ -523,7 +476,7 @@ def main():
 
         cursor.execute("COMMIT")
     conn.close()
-    print(f"✅ Processed {args.chromosome} and updated {args.db_path}")
+    print(f"Processed {args.chromosome} and updated {args.db_path}")
 
 if __name__ == "__main__":
     main()

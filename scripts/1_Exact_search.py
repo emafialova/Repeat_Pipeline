@@ -77,14 +77,14 @@ def outer_fce(string, k, i, def_generator):
     new_string = substitute(areas, string, substitutions, k, def_generator)
     return outer_fce(new_string, k, i, def_generator)
 
-def get_corresponding_letters2(number: int, substitutions_dictionary: dict, rules_dictionary: dict):
+def get_corresponding_letters(number: int, substitutions_dictionary: dict, rules_dictionary: dict):
     corresponding_list = substitutions_dictionary[number]
     result = []
     for i in corresponding_list:
         if i in rules_dictionary:
             result.append(rules_dictionary[i])
         elif i in substitutions_dictionary:
-            interm_result = get_corresponding_letters2(i, substitutions_dictionary, rules_dictionary)
+            interm_result = get_corresponding_letters(i, substitutions_dictionary, rules_dictionary)
             result.extend(interm_result)
     return result
 
@@ -94,7 +94,7 @@ starting_kmers = []
 def simple_processing(input_string, rules, some_substitutions, output_file, window_start_absolute, kmer_dictionary):
     k = 1
     for j in some_substitutions.values():
-        full_str = "".join(rules[m] if m in NT else "".join(get_corresponding_letters2(m, some_substitutions, rules)) for m in j)
+        full_str = "".join(rules[m] if m in NT else "".join(get_corresponding_letters(m, some_substitutions, rules)) for m in j)
         starting_kmers.append(full_str)
         positions = [m.start() + window_start_absolute for m in re.finditer(f"(?={re.escape(full_str)})", input_string)]
         for i in positions:

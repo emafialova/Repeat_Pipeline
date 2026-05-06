@@ -6,7 +6,7 @@ import sys
 
 def is_low_complexity_kmer(kmer: str) -> bool:
     """
-    Returns True if kmer is of low complexity (all the same character).
+    Return True if kmer is of low complexity (all the same character).
     """
     return len(set(kmer)) == 1
 
@@ -38,9 +38,9 @@ def split_kmers(input_row: str, position_dict, threshold=1000):
 
 def merge_split_kmers(position_dict, min_distance=30, min_occurrences=10):
     """
-    Merges overlapping or adjacent intervals from the position_dict,
-    filters based on length (min_distance),
-    and keeps only those with at least min_occurrences positions inside.
+    Merge overlapping or adjacent intervals from the position_dict,
+    filter based on length (min_distance),
+    and keep only those with at least min_occurrences positions inside.
     """
     all_positions_flat = []
     for kmer, groups in position_dict.items():
