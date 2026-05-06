@@ -189,8 +189,6 @@ The generated HTML is split into five parts:
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
 
 ## Troubleshooting
-If you are running this pipeline on a Mac OS, you will see an error. This is caused by the Step 3 C script specifics and at the top, there is a commented section which is made specifically for Mac OS. Uncomment to run, comment the Linux-based one.
-
 The expected run time for a whole genome sequence if utilizing 10 workers is approximately 24 hours. This may vary based on the length and complexity of the DNA sequence.
 
 ## Summary

@@ -23,7 +23,7 @@ typedef uint64_t word_t;  // 64-bit unsigned integer
 int length = 5;
 
 // THE FOLLOWING WORKS FOR LINUX, the one below for mac os
-/*
+#ifdef __linux__
 int compare_indexed_doubles_desc(const void *a, const void *b, void *arr_ptr) {
     const double *arr = arr_ptr;
     size_t ia = *(const size_t *)a;
@@ -34,9 +34,10 @@ int compare_indexed_doubles_desc(const void *a, const void *b, void *arr_ptr) {
 void sort_indices_4(const double arr[4], size_t indices[4]) {
     for (size_t i = 0; i < 4; i++) indices[i] = i;
     qsort_r(indices, 4, sizeof(size_t), compare_indexed_doubles_desc, (void*)arr);
-}*/
+}
 
 // THE FOLLOWING WORKS FOR MAC OS, the above for linux
+#elif __APPLE__
 static int compare_indexed_doubles_desc(void *arr_ptr, const void *a, const void *b) {
     const double *arr = arr_ptr;
     size_t ia = *(const size_t *)a;
@@ -53,7 +54,7 @@ void sort_indices_4(const double arr[4], size_t indices[4]) {
 
     qsort_r(indices, 4, sizeof(size_t), (void *)arr, compare_indexed_doubles_desc);
 }
-
+#endif
 
 typedef struct {
     size_t frequency;
