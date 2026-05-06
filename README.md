@@ -62,13 +62,25 @@ It is also possible to generate an HTML visualization using the provided script:
 ## Final Parameter configuration
 This pipeline consists of 5 steps, each step has several parameters which can be altered by the user. The results shown below were generated with the following parameter configuration:
 
-| Parameter | Description | Value |
+| Step | Parameter | Value |
 | :--- | :--- | :--- |
-| `--sequence` | Path to the input FASTA file | *(Required)* |
-| `--chromosome_id` | The ID of the chromosome being analyzed | *(Required)* |
-| `--outdir` | Directory where output files will be saved | `./results` |
-| `--allowed_HD_error` | Maximum Hamming Distance error allowed | `15` |
-| `--db_path` | Absolute path to the SQLite database | `genome_clusters.db` |
+| Step 1 |`Min k-mer Length (k)` | 10 | 
+| Step 1 |`Min k-mer Frequency (m)` | 10 | 
+| Step 1 |`Sliding Window Size (W)` | 10 000 | 
+| Step 1 |`Sliding Window Step Size (D)` | 5 000 | 
+| Step 2 |`Max Distance Between Occurrences (d)` | 1 000 | 
+| Step 2 |`Min Region Length (l)` | 30 | 
+| Step 2 |`Min Number of k-mer in a Region (n)` | 10 | 
+| Step 3 |`Min Number of k-mer Occurrences (r)` | 7 | 
+| Step 3 |`Max k-mer Length (K)` | 2 000 | 
+| Step 3 |`Max Hamming Distance (h)` | 15% | 
+| Step 3 |`Frequency Threshold (f)` | GC(region) | 
+| Step 3 |`Time Limit (t)` | 300 s | 
+| Step 5 |`DBSCAN (eps)` | 0.45 | 
+| Step 5 |`DBSCAN (MinPts)` | 2 | 
+| Additional Filtering |`Region Length` | 70 | 
+| Additional Filtering |`Occurrences Median` | 7 | 
+| Additional Filtering |`Extension` | YES | 
 
 The configuration was set up on **Gallus gallus genome, assembly GCA_024206055.2_GGswu**.
 
