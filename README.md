@@ -145,13 +145,7 @@ Below is a self dotplot generated using the YASS program [2] with default parame
 
 The sequence of this gene is available in the folder `test_data`, results of the pipeline generated for this gene are available in the folder `test_results`. Final clusters bed file is called: `5_Clusters.bed`, database with all clusters is available as `clusters_AKT2.db`.
 
-### Command
-The results were generated using the command below:
-```bash
-python ./scripts/00_db_prep.py ./Results/
-nextflow run main.nf 
-```
-### Output 
+### Results Details
 The information about clusters identified and analyzed by this pipeline is automatically loaded into the prepared database. It can be accessed via command line using sqlite3. The database stores information for all clusters across all chromosomes.
 
 Moreover, for each sequence/chromosome, two output files, which store the information, are generated:
