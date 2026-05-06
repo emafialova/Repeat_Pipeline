@@ -42,13 +42,14 @@ conda activate pipeline_env
 ## Usage
 
 ### Example Usage
-1. Database Initialization (Required)
+1. **Database Initialization (Required)**
+
 Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
 ```bash
 python scripts/00_db_prep.py ./Results/clusters_AKT2.db
 ```
 
-2. Pipeline Execution
+2. **Pipeline Execution**
 ```bash
 nextflow run main.nf 
 ```
