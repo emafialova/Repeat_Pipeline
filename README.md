@@ -133,14 +133,16 @@ Moreover, for each sequence/chromosome, two output files, which store the inform
 The bed file can be loaded into standard bioinformatic tools such as UCSC Genome Browser as custom track, allowing the user to see the positions of the clusters. 
 
 The statistics calculated for each cluster present in both database and the tsv file include:
--	**Region Size (bp)**: The absolute length of the clustered genomic region, from the start of the first occurrence of a final k-mer to the end of the last. 
--	**GC Content (%)**: The percentage of guanine and cytosine bases across the whole region. 
--	**Coverage Ratio**: The fraction of the total region size that is covered by the final k-mers. *This demonstrates the density of the repeats within the defined region.* 
--	**Number of k-mers**: The absolute count of distinct final k-mers present. *This demonstrates the variability of the k-mers present in the region.* 
--	**Median Length (bp)**: The median length of all final k-mers present in the cluster. Using median rather than mean prevents k-mers of extreme sizes of skewing the descriptor.
--	**Average and Median occurrences**: The mean and median frequency counts of all final k-mers. *These metrics show the repetitive nature of the final k-mers in the cluster.*
--	**Conservation Score**: A measure of how similar the final k-mers are to the representative sequence of the cluster. Measured using Levenshtein distance between the k-mers. 
--	**Average Raw and Normalized Smith-Waterman Distance**: The mean similarity scores calculated by local pairwise alignment of all final k-mers. *These metrics show the internal cluster cohesion and quantify how closely related the final k-mer sequences are.* 
+| Statistic | Description | 
+| :--- | :--- | 
+| **Region Size (bp)** | The absolute length of the clustered genomic region, from the start of the first occurrence of a final k-mer to the end of the last. |
+| **GC Content (%)** | The percentage of guanine and cytosine bases across the whole region. |
+| **Coverage Ratio** | The fraction of the total region size that is covered by the final k-mers. *This demonstrates the density of the repeats within the defined region.* |
+| **Number of k-mers** | The absolute count of distinct final k-mers present. *This demonstrates the variability of the k-mers present in the region.*  |
+| **Median Length (bp)** | The median length of all final k-mers present in the cluster. Using median rather than mean prevents k-mers of extreme sizes of skewing the descriptor. |
+| **Average and Median occurrences** | The mean and median frequency counts of all final k-mers. *These metrics show the repetitive nature of the final k-mers in the cluster.* |
+| **Conservation Score** | A measure of how similar the final k-mers are to the representative sequence of the cluster. Measured using Levenshtein distance between the k-mers. |
+| **Average Raw and Normalized Smith-Waterman Distance** | The mean similarity scores calculated by local pairwise alignment of all final k-mers. *These metrics show the internal cluster cohesion and quantify how closely related the final k-mer sequences are.* |
 
 ### HTML Visualization
 To visualize a specific cluster, it is necessary to locate its unique ID (e.g. GGA32-BA46CF24.01) in the fourth column of the output .bed file or in the database.  
@@ -171,8 +173,7 @@ This repository presents a specialized computational pipeline capable of perform
 ## Citation
 If you use this pipeline, please cite:
 
-Fialová, E. (2026). *Repetitive Elements and Stutter Genes in Avian Genomes*. Master's thesis, 
-[Univeristy of Chemistry and Technology, Prague, Czech Republic].
+Fialová, E. (2026). *Repetitive Elements and Stutter Genes in Avian Genomes*. Master's thesis, Univeristy of Chemistry and Technology, Prague, Czech Republic.
 
 ## Contact
 For any questions or support, please contact:
