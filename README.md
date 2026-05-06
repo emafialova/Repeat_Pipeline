@@ -41,12 +41,28 @@ conda activate pipeline_env
 ```
 ## Usage
 
-### Database Initialization (Required)
+### Example Usage
+1. Database Initialization (Required)
 Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
 ```bash
-python scripts/00_db_prep.py path/to/db.db
+python scripts/00_db_prep.py ./Results/clusters_AKT2.db
 ```
-It is recommended to store the database in a Results folder and use .db extension (e.g. ./Results/clusters.db)
+
+2. Pipeline Execution
+```bash
+nextflow run main.nf 
+```
+
+### Single Nextflow pipeline run
+If you want to process a single sequence, you can bypass the wrapper and run the Nextflow pipeline directly. The pipeline's default parameters are set in the `nextflow.config` file, however, you can override any of the parameters using the -- flag.
+```bash
+nextflow run main.nf \
+    --sequence path/to/your_sequence.fna \
+    --chromosome_id "chr1" \
+    --sequence_id "target_gene_name" \
+    --outdir Results/custom_run \
+    --db_path path/to/db
+```
 
 ### Parallel Run for Whole Genome Analysis
 For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `run_all_chr_mp.py`
@@ -72,17 +88,6 @@ python run_all_chr_mp.py \
     --org "Gallus gallus" \
     --db_path ./Results/clusters_GG.db \
     --output_directory ./Results/GG
-```
-
-### Single Nextflow pipeline run
-If you want to process a single sequence, you can bypass the wrapper and run the Nextflow pipeline directly. The pipeline's default parameters are set in the `nextflow.config` file, however, you can override any of the parameters using the -- flag.
-```bash
-nextflow run main.nf \
-    --sequence path/to/your_sequence.fna \
-    --chromosome_id "chr1" \
-    --sequence_id "target_gene_name" \
-    --outdir Results/custom_run \
-    --db_path path/to/db
 ```
 
 ## Input
@@ -137,6 +142,7 @@ The sequence of this gene is available in the folder `test_data`, results of the
 ### Command
 The results were generated using the command below:
 ```bash
+python ./scripts/00_db_prep.py ./Results/
 nextflow run main.nf 
 ```
 ### Output 
