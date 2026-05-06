@@ -187,6 +187,9 @@ For any questions or support, please contact:
 ## Acknowledgments
 This work was carried out with the support of ELIXIR CZ Research Infrastructure (ID LM2023055, MEYS CR)
 
+This pipeline utilizes a standalone Python implementation of a Suffix Array to optimize the initial exact k-mer search. We gratefully acknowledge the work of **dohlee**, whose open-source `pysuffixarray` repository was adapted for this step. 
+* Source code available at: [https://github.com/dohlee/pysuffixarray](https://github.com/dohlee/pysuffixarray)
+
 ## References
 [1] Hron, T.; Miklík, D.; Pačes, J.; Pajer, P.; Pečenka, V.; Hejnar, J.; Nehyba, J.; Elleder, D. Decoding the Avian Missing Gene Mystery: Dot Chromosomes Unmask Extensive Gene Loss and Novel Genetic Instability. Genome Biol. Evol. 2026, 18 (3), evag038. https://doi.org/10.1093/gbe/evag038.
 

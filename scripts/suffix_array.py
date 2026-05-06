@@ -1,4 +1,7 @@
-#from sais import construct_suffix_array
+"""
+This file contains an implementation of suffix array data structure originally authored by dohlee. Source: https://github.com/dohlee/pysuffixarray
+The code is included as a standalone module and the functions are utilized in the main pipeline - script 1_Exact_search.py.
+"""
 
 class SuffixArray:
 
