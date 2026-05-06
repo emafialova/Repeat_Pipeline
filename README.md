@@ -1,9 +1,8 @@
 # Repeat Identification and Analysis Pipeline
 
 ## Description
-This Nextflow-based pipeline can be used to identify and analyze highly repetitive sequence clusters. Originally designed to analyze repeats belonging to the sequence stuttering phenomenon and optimized on the genome of *Gallus gallus*. It reports repeat cluster metadata as well as calculated statistics.
-
-Avian genomes exhibit distinct characteristics, shaped by extensive adaptations during their evolution within the dinosaur lineage. For a long time, a number of genes were believed to be evolutionarily lost in avian genomes. However, recent studies suggest that many of these genes are not truly absent but rather located in regions that are technically difficult to analyze—such as microchromosomes. These regions are characterized by high GC content and a high density of repetitive elements, including the sequence stuttering phenomenon. These characteristics may contribute to genomic instability and their further analysis can provide insights into mechanisms of evolutionary change and selection. To address this need, a specialized computational pipeline capable of the identification and analysis of repetitive features, including the sequence stuttering phenomenon, has been developed. 
+Avian genomes exhibit distinct characteristics, shaped by extensive adaptations during their evolution within the dinosaur lineage. For a long time, a number of genes were believed to be evolutionarily lost in avian genomes. However, recent studies suggest that many of these genes are not truly absent but rather located in regions that are technically difficult to analyze—such as microchromosomes. These regions are characterized by high GC content and a high density of repetitive elements, including the sequence stuttering phenomenon. These characteristics may contribute to genomic instability and their further analysis can provide insights into mechanisms of evolutionary change and selection. 
+To address this need, a specialized computational pipeline capable of the identification and analysis of repetitive features, including the sequence stuttering phenomenon, has been developed and optimized on the genome of *Gallus gallus*.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -28,11 +27,12 @@ Avian genomes exhibit distinct characteristics, shaped by extensive adaptations 
 Before running the pipeline, ensure the following core tools are installed on your system:
 * **[Conda](https://docs.conda.io/en/latest/miniconda.html)** (Miniconda or Anaconda) to manage dependencies.
 * **[Nextflow](https://www.nextflow.io/docs/latest/getstarted.html)** (version 22.0+) to execute the workflow.
+* **Python** (3.10+)
 
 ### Environment Set Up
 ```bash
 git clone https://github.com/emafialova/Repeat_Pipeline.git
-cd YourRepoName
+cd Repeat_Pipeline
 
 # Create and activate environment
 conda env create -f environment.yml
@@ -64,7 +64,7 @@ nextflow run main.nf \
     --sequence path/to/your_sequence.fna \
     --chromosome_id "chr1" \
     --sequence_id "target_gene_name" \
-    --outdir Results/custom_run
+    --outdir Results/custom_run \
     --db_path path/to/db
 ```
 
@@ -81,7 +81,7 @@ Below, you can find an Entity-Relationship DIagram for the SQLite database:
 
 It is also possible to generate an HTML visualization using the provided script: `html_vis_db_usage.py`
 
-## Final Parameter configuration
+## Recommended Parameter configuration
 This pipeline consists of 5 steps, each step has several parameters which can be altered by the user. The results shown below were generated with the following parameter configuration:
 
 | Step | Parameter | Value |
@@ -179,6 +179,7 @@ Fialová, E. (2026). *Repetitive Elements and Stutter Genes in Avian Genomes*. M
 For any questions or support, please contact:
 - ema.fialova@img.cas.cz
 
+## Acknowledgments
 This work was carried out with the support of ELIXIR CZ Research Infrastructure (ID LM2023055, MEYS CR)
 
 ## References
