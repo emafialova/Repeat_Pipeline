@@ -59,11 +59,18 @@ python run_all_chr_mp.py \
     --org "Gallus gallus" \
     --db_path path/to/db \
     --output_directory path/to/output_directory
-python run_all_chr_mp.py --data_source path/to/fasta --chromosome_prefix chr --workers 10
 ```
-If you wish to use the pipeline only on a selected subset of the chromosomes, use the optional chr_list flag:
+
+Below you can find a command that can be used to run this analysis for all *Gallus gallus* chromosomes assuming you have the genome sequence in `data` folder, the output directory is `Results/GG` and the database is stored in `Results` folder:
+
 ```bash
-python run_all_chr_mp.py --data_source path/to/fasta --chromosome_prefix chr --workers 10 --chr_list "chr1,chr2,chr3"
+python run_all_chr_mp.py \
+    ./data/GCA_024206055.2_GGswu_genomic \
+    CP1005 \
+    --workers 30 \
+    --org "Gallus gallus" \
+    --db_path ./Results/clusters_GG.db \
+    --output_directory ./Results/GG
 ```
 
 ### Single Nextflow pipeline run
@@ -78,7 +85,9 @@ nextflow run main.nf \
 ```
 
 ## Input
-There are only two required inputs for the pipeline: a FASTA sequence file (example is in test_sequence folder) - most often a whole genome sequence and a KEGG organism mapping file (`KEGG_mapping.txt` included in this repo).
+There are only two required inputs for the pipeline: 
+- a FASTA sequence file (example is in test_sequence folder), most often a whole genome sequence 
+- an organism mapping file (default `KEGG_mapping.txt` is included in this repo). This is used to generate cluster IDs
 
 ## Output
 There are several generated outputs:
@@ -171,6 +180,11 @@ The generated HTML is split into five parts:
 
 ![HTML vis - part 1 AKT2](Images/HTML_parts_A-B.png)
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
+
+## Troubleshooting
+If you are running this pipeline on a Mac OS, you will see an error. This is caused by the Step 3 C script specifics and at the top, there is a commented section which is made specifically for Mac OS. Uncomment to run, comment the Linux-based one.
+
+The expected run time for a whole genome sequence if utilizing 10 workers is approximately 24 hours. This may vary based on the length and complexity of the DNA sequence.
 
 ## Summary
 This repository presents a specialized computational pipeline capable of performing a systematic analysis of complex repetitive regions. The pipeline provides a robust framework for repetitive cluster analysis, offering outputs in the form of a database as well as standardized bioinformatic BED file format. Furthermore, the user is also able to generate an HTML report with detailed information about the repetitive cluster. Ultimately, this pipeline serves as a key tool for the analysis of repetitive regions, providing valuable insights that were previously obscured. 
