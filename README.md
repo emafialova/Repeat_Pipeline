@@ -2,6 +2,7 @@
 
 ## Description
 Avian genomes exhibit distinct characteristics, shaped by extensive adaptations during their evolution within the dinosaur lineage. For a long time, a number of genes were believed to be evolutionarily lost in avian genomes. However, recent studies suggest that many of these genes are not truly absent but rather located in regions that are technically difficult to analyze—such as microchromosomes. These regions are characterized by high GC content and a high density of repetitive elements, including the sequence stuttering phenomenon. These characteristics may contribute to genomic instability and their further analysis can provide insights into mechanisms of evolutionary change and selection. 
+
 To address this need, a specialized computational pipeline capable of the identification and analysis of repetitive features, including the sequence stuttering phenomenon, has been developed and optimized on the genome of *Gallus gallus*.
 
 ## Table of Contents
@@ -15,11 +16,11 @@ To address this need, a specialized computational pipeline capable of the identi
 - [Contact](#contact)
 
 ## Features
-- localizes imperfect repeats
-- thresholds adaptable to a given usecase
-- provides output in the form of an SQLite database 
-- calculates statistics for each cluster (see table with details below)
-- possible HTML visualization for selected repeat cluster `html_vis_db_usage.py`
+- Able to identify sequence stuttering phenomenon = locally expanded motifs resembling tandem repeat expansions where the repeat motif is usually tens to hundred bases long and imperfect. [1]
+- Optimized on the genome of *Gallus gallus* but has adaptable parameters
+- Performs a systematic analysis of complex repetitive regions
+- Offers outputs in the form of a database as well as standardized bioinformatic BED file format
+- Possibility of generating a HTML report with detailed information about the repetitive cluster
 
 ## Installation
 
@@ -75,6 +76,7 @@ There are only two required inputs for the pipeline: a FASTA sequence file (exam
 There are several generated outputs:
 - BED file 
 - SQLite database populated by repeat clusters
+
 Below, you can find an Entity-Relationship DIagram for the SQLite database:
 
 ![DB](Images/DB_setup.png) 
@@ -108,7 +110,7 @@ The configuration was set up on **Gallus gallus genome - assembly GCA_024206055.
 
 ## Example usage
 I will demonstrate the usage of the pipeline on the gene AKT2 which is located on the 32nd chromosome **(Gallus gallus genome, assembly GCA_024206055.2_GGswu: CP100586.2:2596287-2608733)**.
-Below is a self dotplot generated using the YASS program [1] with default parameters. It is visible that there are several repeat clusters, identifying and analyzing them is the objective of the pipeline.
+Below is a self dotplot generated using the YASS program [2] with default parameters. It is visible that there are several repeat clusters, identifying and analyzing them is the objective of the pipeline.
 
 ![Dotplot AKT2](Images/Dotplot_AKT2.png) 
 
@@ -145,8 +147,8 @@ The statistics calculated for each cluster present in both database and the tsv 
 | **Average Raw and Normalized Smith-Waterman Distance** | The mean similarity scores calculated by local pairwise alignment of all final k-mers. *These metrics show the internal cluster cohesion and quantify how closely related the final k-mer sequences are.* |
 
 ### HTML Visualization
-To visualize a specific cluster, it is necessary to locate its unique ID (e.g. GGA32-BA46CF24.01) in the fourth column of the output .bed file or in the database.  
-HTML visualizations of selected clusters are available in the folder `test_results/HTML`, the following command was used to generate that of cluster GGA32-BA46CF24.01:
+To visualize a specific cluster, it is necessary to locate its unique ID (e.g. GGA32-BA46CF24.01) in the fourth column of the output .bed file or in the database: field *human_id* in the table *Instances*.  
+HTML visualizations of selected clusters are available in the folder `test_results/HTML`, the following command was used to generate that of cluster **GGA32-BA46CF24.01**:
 ```bash
 python html_vis_db_usage.py \
     --db ./test_results/clusters_db_AKT2.db \
@@ -183,4 +185,5 @@ For any questions or support, please contact:
 This work was carried out with the support of ELIXIR CZ Research Infrastructure (ID LM2023055, MEYS CR)
 
 ## References
-[1] Noé, L., & Kucherov, G. (2005). YASS: enhancing the sensitivity of DNA similarity search. *Nucleic Acids Research*, 33(suppl_2), W540-W543. https://doi.org/10.1093/nar/gki478
+[1] Hron, T.; Miklík, D.; Pačes, J.; Pajer, P.; Pečenka, V.; Hejnar, J.; Nehyba, J.; Elleder, D. Decoding the Avian Missing Gene Mystery: Dot Chromosomes Unmask Extensive Gene Loss and Novel Genetic Instability. Genome Biol. Evol. 2026, 18 (3), evag038. https://doi.org/10.1093/gbe/evag038.
+[2] Noé, L., & Kucherov, G. (2005). YASS: enhancing the sensitivity of DNA similarity search. *Nucleic Acids Research*, 33(suppl_2), W540-W543. https://doi.org/10.1093/nar/gki478
