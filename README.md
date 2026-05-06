@@ -1,10 +1,14 @@
 # Repeat Identification and Analysis Pipeline
 
 ## Description
-This Nextflow-based pipeline can be used to identify and analyze highly repetitive sequence clusters. Originally designed to analyze repeats belonging to the sequence stuttering pehnomenon and optimized on the genome of *Gallus gallus*. It reports repeat cluster metadata as well as calculated statistics.
+This Nextflow-based pipeline can be used to identify and analyze highly repetitive sequence clusters. Originally designed to analyze repeats belonging to the sequence stuttering phenomenon and optimized on the genome of *Gallus gallus*. It reports repeat cluster metadata as well as calculated statistics.
 
 ## Features
-- 
+- localizes imperfect repeats
+- thresholds adaptable to a given usecase
+- provides output in the form of an SQLite database 
+- calculates statistics for each cluster (see table with details below)
+- possible HTML visualization for selected repeat cluster `html_vis_db_usage.py`
 
 ## Instalation
 
@@ -30,7 +34,7 @@ To run the parallel execution, use the following command:
 ```bash
 python run_all_chr_mp.py --data_source path/to/fasta --chromosome_prefix chr --workers 10
 ```
-If you wish to use the pipeline only on a selected subset of the chromosomes, use the optional chr-List flag:
+If you wish to use the pipeline only on a selected subset of the chromosomes, use the optional chr_list flag:
 ```bash
 python run_all_chr_mp.py --data_source path/to/fasta --chromosome_prefix chr --workers 10 --chr_list "chr1,chr2,chr3"
 ```
@@ -43,10 +47,11 @@ nextflow run main.nf \
     --chromosome_id "chr1" \
     --sequence_id "target_gene_name" \
     --outdir Results/custom_run
+    --db_path path/to/db
 ```
 
 ## Input
-There are only two required inputs for the pipeline: a FASTA sequence file (example is in test_sequence folder) - most often a whole genome sequence and a KEGG organism mapping file (included in this repo).
+There are only two required inputs for the pipeline: a FASTA sequence file (example is in test_sequence folder) - most often a whole genome sequence and a KEGG organism mapping file (`KEGG_mapping.txt` included in this repo).
 
 ## Output
 There are several generated outputs:

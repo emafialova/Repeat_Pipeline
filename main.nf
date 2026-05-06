@@ -11,7 +11,7 @@ params.extension_dir = "C_output_dir"
 params.diag_tol = 2000
 params.sequence_id = null
 params.chromosome_id = null
-params.gff_file = null
+//params.gff_file = null
 params.prefix = "repeats"
 params.start = null
 params.end = null
@@ -20,7 +20,7 @@ params.org = null
 params.db_path = "genome_clusters.db"
 
 input_sequence = Channel.fromPath(params.sequence, checkIfExists: true)
-gff_file = Channel.fromPath(params.gff_file, checkIfExists: true)
+//gff_file = Channel.fromPath(params.gff_file, checkIfExists: true)
 
 // ---------------------------------------------------------
 // 2. Script Channels 
@@ -94,7 +94,7 @@ process EXTRACT_SEQ {
     def end_flag   = params.end   ? "--end ${params.end}"   : ""
     def output_filename = "${params.chromosome_id}_seq.fasta"
     """
-    python ${script_file} ${seq} ${output_filename} ${params.chromosome_id} ${start_flag} ${end_flag}
+    python ${script_file} ${seq} ${output_filename} ${params.sequence_id} ${start_flag} ${end_flag}
     """
 }
 
