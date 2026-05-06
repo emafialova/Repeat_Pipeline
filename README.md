@@ -32,7 +32,7 @@ Before running the pipeline, ensure the following core tools are installed on yo
 
 ### Environment Set Up
 ```bash
-git clone https://github.com/emafialova/Repeat_Pipeline.git
+git clone --recursive https://github.com/emafialova/Repeat_Pipeline.git 
 cd Repeat_Pipeline
 
 # Create and activate environment
