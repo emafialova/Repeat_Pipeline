@@ -59,6 +59,9 @@ There are several generated outputs:
 - BED file 
 It is also possible to generate an HTML visualization using the provided script: `html_vis_db_usage.py`
 
-
+## Example usage
+I will demonstrate the usage of the pipeline on the gene AKT2 which is located on the 32nd chromosome **(Gallus gallus genome, assembly GCA_024206055.2_GGswu: CP100586.2:2596287-2608733)**.
+Below is a self dotplot generated using the YASS program with default parameters. It is visible that there are several repeat clusters, identifying and analyzing htem is the objective of the pipeline.
+![Dotplot AKT2](Dotplot_AKT2.png) 
 
 
