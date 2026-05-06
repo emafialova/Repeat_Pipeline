@@ -63,8 +63,12 @@ There are only two required inputs for the pipeline: a FASTA sequence file (exam
 
 ## Output
 There are several generated outputs:
-- SQLite database populated by repeat clusters
 - BED file 
+- SQLite database populated by repeat clusters
+Below, you can find an Entity-Relationship DIagram for the SQLite database:
+
+![DB](Images/DB_setup.png) 
+
 It is also possible to generate an HTML visualization using the provided script: `html_vis_db_usage.py`
 
 ## Final Parameter configuration
@@ -94,7 +98,7 @@ The configuration was set up on **Gallus gallus genome - assembly GCA_024206055.
 
 ## Example usage
 I will demonstrate the usage of the pipeline on the gene AKT2 which is located on the 32nd chromosome **(Gallus gallus genome, assembly GCA_024206055.2_GGswu: CP100586.2:2596287-2608733)**.
-Below is a self dotplot generated using the YASS program with default parameters. It is visible that there are several repeat clusters, identifying and analyzing them is the objective of the pipeline.
+Below is a self dotplot generated using the YASS program [1] with default parameters. It is visible that there are several repeat clusters, identifying and analyzing them is the objective of the pipeline.
 
 ![Dotplot AKT2](Images/Dotplot_AKT2.png) 
 
@@ -116,7 +120,7 @@ The information about clusters identified and analyzed by this pipeline is autom
 Moreover, for each sequence/chromosome, two output files, which store the information, are generated:
 - bed file which stores information about position of a cluster and a cluster ID `cluster_islands_C7_new.bed`
 - tsv file with cluster information `cluster_islands_C7_new_details.tsv`
-The bed file can be loaded into standard bioinformatic tools such as UCSC Genome Browser as custom track, allowing user to see the positions of the clusters. 
+The bed file can be loaded into standard bioinformatic tools such as UCSC Genome Browser as custom track, allowing the user to see the positions of the clusters. 
 
 The statistics calculated for each cluster present in both database and the tsv file include:
 -	**Region Size (bp)**: The absolute length of the clustered genomic region, from the start of the first occurrence of a final k-mer to the end of the last. 
@@ -152,7 +156,7 @@ The generated HTML is split into five parts:
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
 
 ## Summary
-This repository presents a specialized computational pipeline capable of performing a systematic analysis of complex repetitive regions. The pipeline provides a robust framework for repetitive cluster analysis, offering outputs in the form of a database as well as standardized bioinformatic BED file format. Furthermore, the user is also able to generate an HTML report with detail information about the repetitive cluster. Ultimately, this pipeline serves as a key tool for the analysis of repetitive regions, providing valuable insights that were previously obscured. 
+This repository presents a specialized computational pipeline capable of performing a systematic analysis of complex repetitive regions. The pipeline provides a robust framework for repetitive cluster analysis, offering outputs in the form of a database as well as standardized bioinformatic BED file format. Furthermore, the user is also able to generate an HTML report with detailed information about the repetitive cluster. Ultimately, this pipeline serves as a key tool for the analysis of repetitive regions, providing valuable insights that were previously obscured. 
 
 ## Contact
 For any questions or support, please contact:
@@ -160,4 +164,5 @@ For any questions or support, please contact:
 
 This work was carried out with the support of ELIXIR CZ Research Infrastructure (ID LM2023055, MEYS CR)
 
-
+## References
+[1] Noé, L., & Kucherov, G. (2005). YASS: enhancing the sensitivity of DNA similarity search. *Nucleic Acids Research*, 33(suppl_2), W540-W543. https://doi.org/10.1093/nar/gki478
