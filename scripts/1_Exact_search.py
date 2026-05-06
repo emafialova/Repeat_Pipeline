@@ -1,9 +1,7 @@
 import numpy as np
 import pickle
 import time
-#from Approach_1.Pipeline.scripts.suffix_array import SuffixArray
 from suffix_array import SuffixArray
-#import pydivsufsort
 from Bio import SeqIO
 import argparse
 import re
@@ -15,7 +13,6 @@ def generate_symbols():
     for i in range(5, 1000000):
         yield i
 
-#generator = generate_symbols()
 substitutions = {}
 string_levels = []
 
@@ -54,7 +51,6 @@ def substitute(areas_dic: dict, input_string: list, substitutions: dict, k: int,
 
     if most_freq_kmer not in substitutions:
         substitutions[most_freq_kmer] = next(def_generator)
-        #print(substitutions[most_freq_kmer])
 
     new_symbol = substitutions[most_freq_kmer]
     new_string = inner_substitute(most_freq_kmer, new_symbol, input_string)
@@ -68,7 +64,6 @@ def outer_fce(string, k, i, def_generator):
     sa = SuffixArray(string)
     output = sa.suffix_array()
     lcp = sa.longest_common_prefix()
-    #print(lcp)
   
     areas_of_interest = find_all_interesting_areas(lcp, k, i)
 
@@ -118,7 +113,7 @@ if __name__ == '__main__':
     parser.add_argument("--overlap", type=int, default=5000, help="Size of window overlap in bp (default: 5000)")
 
     if len(sys.argv) == 1:
-        print("\nWelcome to a Tool used for searching kmers!")
+        print("\nWelcome to the first step used for searching kmers!")
         print("You need to provide input files and parameters.\n")
         parser.print_help(sys.stderr)
         sys.exit(1)
@@ -130,20 +125,14 @@ if __name__ == '__main__':
     print(f"Sequence loaded from {args.fasta_file}")
     start_time = time.time()
 
-    #window_size = 10000
-    #overlap = 5000
     step_size = args.window_size - args.overlap
     total_length = len(intron)
 
     rules = {"A": 1, "T": 2, "C": 3, "G": 4, "N": 0}
     rev_rules = {value: key for key, value in rules.items()}
 
-    #intron_num = [rules[base] for base in intron]
-    #random.shuffle(intron_num)
-
     kmers = defaultdict(list)
 
-    #output_tsv_path = f"{args.output_file}.tsv"
     output_tsv_path = args.output_file
     with open(output_tsv_path, "w") as output_handle:
         output_handle.write("kmer\tcount\tlength\tfirst_position\tall_positions\n")
@@ -152,11 +141,7 @@ if __name__ == '__main__':
             window_end = min(window_start + args.window_size, total_length)
             window_seq = intron[window_start:window_end]
             window_seq = re.sub(r'[^ATCG]', 'N', window_seq)
-            #window_seq_num = intron_num[window_start:window_end]
             window_seq_num = [rules[base] for base in window_seq]
-            #random.shuffle(window_seq_num)
-            #window_seq_shuffled = [rev_rules[m] for m in window_seq_num]
-            #window_seq = "".join(window_seq_shuffled)
             print(f"Processing window {window_start}-{window_end} ({window_end - window_start} nt)")
             generator = generate_symbols()
             substitutions.clear()

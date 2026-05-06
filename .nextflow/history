@@ -6,3 +6,7 @@
 2026-05-06 11:14:09	7.5s	crazy_kare	OK	9f0f831468f8dc1068b9130e4d8bb214	3c1aef25-efc7-485b-9885-c8096aea3b0f	nextflow run main.nf --sequence ./test_data/AKT2_seq.fasta --chromosome_id CP100586.2 --sequence_id AKT2 --outdir ./test_results/AKT2 --db_path /Users/emafialova/Projects/DP_Final/test_results/clusters_db_AKT2_2.db
 2026-05-06 11:22:18	7.4s	gloomy_mccarthy	OK	9f0f831468f8dc1068b9130e4d8bb214	ce8dd2f3-2e11-41e2-9ea7-b4e24eb31908	nextflow run main.nf --sequence ./test_data/AKT2_seq.fasta --chromosome_id CP100586.2 --sequence_id AKT2 --outdir ./test_results/AKT2 --db_path /Users/emafialova/Projects/DP_Final/test_results/clusters_db_AKT2_2.db
 2026-05-06 11:23:21	6.2s	condescending_minsky	OK	9f0f831468f8dc1068b9130e4d8bb214	7e4dca04-59b1-4500-a8c5-1fe45b557599	nextflow run main.nf --sequence ./test_data/AKT2_seq.fasta --chromosome_id CP100586.2 --sequence_id AKT2 --outdir ./test_results/AKT2 --db_path /Users/emafialova/Projects/DP_Final/test_results/clusters_db_AKT2.db
+2026-05-06 16:36:52	1.7s	astonishing_dalembert	ERR	d046d96a19bddafe7a492b534bdf8c22	887b1076-a471-4d87-952a-cc4e8e86c2ba	nextflow run main.nf
+2026-05-06 16:42:00	3.1s	maniac_wright	ERR	d046d96a19bddafe7a492b534bdf8c22	383f406c-a336-400f-9bad-661defb23bcc	nextflow run main.nf
+2026-05-06 16:43:40	2.8s	elegant_gutenberg	ERR	320e8e053fe144c6d417ad2c763f383a	469a58a1-59d6-4e7e-aaf0-2d707e61b527	nextflow run main.nf
+2026-05-06 16:45:14	7.4s	hopeful_payne	OK	320e8e053fe144c6d417ad2c763f383a	46533aeb-10f4-4092-9d9c-9a02b00a68ba	nextflow run main.nf

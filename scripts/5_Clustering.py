@@ -476,7 +476,7 @@ def main():
     cursor = conn.cursor()
     
     with open(args.output, "w") as out_f, \
-         open(args.output.replace(".tsv", "_details.tsv"), "w") as out_d:
+         open(args.output.replace(".bed", "_details.tsv"), "w") as out_d:
         
         cursor.execute("BEGIN TRANSACTION")
         for _, r_start, r_end, island_info, r_id in results:

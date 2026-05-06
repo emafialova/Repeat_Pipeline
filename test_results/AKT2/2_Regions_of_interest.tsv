@@ -1,4 +1,4 @@
-A1_window_kmers_10k_5k_final_10_10_regions.tsv analysis of found kmers - transformation into areas of interest
+1_Exact_search_kmers.tsv analysis of found kmers - transformation into areas of interest
 start	stop	kmers
 121	1897	['GGGGCCGTTG', 'GGGTGTTGTC', 'GGGGCTGTTG']
 2212	2719	['TGGTGTCCCC']

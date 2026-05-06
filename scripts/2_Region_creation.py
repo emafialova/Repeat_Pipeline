@@ -1,7 +1,6 @@
 import argparse
 import time
 import ast  # safer literal evaluation
-#import matplotlib.pyplot as plt
 from Bio import SeqIO
 import sys
 
@@ -43,7 +42,6 @@ def merge_split_kmers(position_dict, min_distance=30, min_occurrences=10):
     filters based on length (min_distance),
     and keeps only those with at least min_occurrences positions inside.
     """
-    # Flatten all positions for occurrence counting
     all_positions_flat = []
     for kmer, groups in position_dict.items():
         for group in groups:
@@ -83,10 +81,6 @@ def merge_split_kmers(position_dict, min_distance=30, min_occurrences=10):
             filtered_merged.append((start, end))
     return filtered_merged
 
-# Testing example
-line = "CCCCCTCCCC\t7\t10\t1768\t[1768, 8110, 8674, 8772, 8813, 8910, 12257]"
-posit = {}
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Analyze the frequent kmers to determine interesting regions.")
     parser.add_argument("kmer_file", help="Path to the input file containing kmers.")
@@ -95,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument("--threshold", type=int, default=1000, help="Threshold for position gap splitting (default: 1000)")
     
     if len(sys.argv) == 1:
-        print("\nWelcome to a Tool used for further kmer analysis!")
+        print("\nWelcome to the second step used for the creation of regions of interest!")
         print("You need to provide input files and parameters.\n")
         parser.print_help(sys.stderr)
         sys.exit(1)
@@ -113,7 +107,7 @@ if __name__ == '__main__':
     merged_intervals = merge_split_kmers(position_dictionary)
     print(merged_intervals)
 
-    with open(f"{args.output_file}_regions.tsv", "w") as out_f:
+    with open(f"{args.output_file}.tsv", "w") as out_f:
         out_f.write(f"{args.kmer_file} analysis of found kmers - transformation into areas of interest\n")
         out_f.write("start\tstop\tkmers\n")
         for interval in merged_intervals:
@@ -126,8 +120,10 @@ if __name__ == '__main__':
                         break  # avoid duplicates if multiple groups from same kmer
             out_f.write(f"{start}\t{end}\t{contributing_kmers}\n")
 
-    sequence = SeqIO.read(args.analyzed_sequence, "fasta")
-    seq = str(sequence.seq)
+    # Uncomment the following block if you want to visualize the merged intervals on the original sequence (requires matplotlib)
+    
+    #sequence = SeqIO.read(args.analyzed_sequence, "fasta")
+    #seq = str(sequence.seq)
     
     #plt.figure(figsize=(15, 2))
     #plt.hlines(y=0, xmin=0, xmax=len(seq), color='gray', linewidth=2)
@@ -146,4 +142,4 @@ if __name__ == '__main__':
     minutes = int(elapsed_time // 60)
     seconds = int(elapsed_time % 60)
     print(f"Total runtime: {minutes} minutes {seconds} seconds ({elapsed_time:.2f} seconds)")
-    print(f"Outputs saved to {args.output_file}_split_kmers.tsv")
+    print(f"Outputs saved to {args.output_file}.tsv")

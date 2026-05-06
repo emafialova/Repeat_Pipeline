@@ -11,7 +11,6 @@ params.extension_dir = "C_output_dir"
 params.diag_tol = 2000
 params.sequence_id = null
 params.chromosome_id = null
-//params.gff_file = null
 params.prefix = "repeats"
 params.start = null
 params.end = null
@@ -20,25 +19,19 @@ params.org = null
 params.db_path = "genome_clusters.db"
 
 input_sequence = Channel.fromPath(params.sequence, checkIfExists: true)
-//gff_file = Channel.fromPath(params.gff_file, checkIfExists: true)
 
 // ---------------------------------------------------------
 // 2. Script Channels 
 // ---------------------------------------------------------
-script_extract_seq  = file("${projectDir}/scripts/A1_0_extract_chr.py")
-script_full_chr      = file("${projectDir}/scripts/Approach_1_full_chr.py")
-script_analyze_kmers = file("${projectDir}/scripts/Approach_1_analyze_kmers.py")
-script_final_nodes   = file("${projectDir}/scripts/A1_2_final_nodes_regions.py")
-script_clusters      = file("${projectDir}/scripts/A1_4_trial.py")
-//script_yass          = file("${projectDir}/scripts/YASS_ground_truth.py")
-//script_sens_spec     = file("${projectDir}/scripts/Sens_spec_calculation.py")
-//script_CDS           = file("${projectDir}/scripts/A1_5_CDS_overlap.py")
+script_extract_seq  = file("${projectDir}/scripts/0_extract_chr.py")
+script_full_chr      = file("${projectDir}/scripts/1_Exact_search.py")
+script_analyze_kmers = file("${projectDir}/scripts/2_Region_creation.py")
+script_final_nodes   = file("${projectDir}/scripts/4_Final_kmers.py")
+script_clusters      = file("${projectDir}/scripts/5_Clustering.py")
 
 // C Files
-script_c_main        = file("${projectDir}/scripts/A1_2_sec.c")
-//script_c_zhash       = file("${projectDir}/zhash-c/src/zhash.c")
+script_c_main        = file("${projectDir}/scripts/3_Extension.c")
 dir_c_hash           = file("${projectDir}/scripts/zhash-c")
-//script_h_zhash       = file("${projectDir}/zhash-c/src/zhash.h")
 
 // ---------------------------------------------------------
 // 3. Workflow Definition
@@ -64,17 +57,6 @@ workflow {
 
     // F. Clusters
     CLUSTERS(FINAL_NODES.out, EXTENSION.out, EXTRACT_SEQ.out, script_clusters)
-    //CLUSTERS(FINAL_NODES.out, EXTENSION.out, input_sequence, script_clusters)
-
-    /*
-    // G. YASS (Parallel independent step)
-    YASS(EXTRACT_SEQ.out, script_yass)
-
-    // H. Stats
-    SENS_SPEC(CLUSTERS.out.main_out, YASS.out, script_sens_spec, EXTRACT_SEQ.out)
-    */
-    // I. CDS Overlap
-    //CDS_OVERLAP(script_CDS, CLUSTERS.out.main_out, gff_file)
 }
 
 // ---------------------------------------------------------
@@ -110,19 +92,17 @@ process COMPILE_C {
     //path h_dep
     
     output:
-    path "A1_2_sec"
+    path "3_Extension"
 
     script:
     """
     # Compile linking both C files. 
-    # Because 'h_dep' is in inputs, Nextflow stages it in this dir, 
-    # so we don't need complex -I flags.
-    gcc -O3 -o A1_2_sec ${c_main} ${zhash_lib_dir}/src/zhash.c -lm
+    gcc -O3 -o 3_Extension ${c_main} ${zhash_lib_dir}/src/zhash.c -lm
     """
 }
 
 // ---------------------------------------------------------
-// PROCESS: Step 1 (Full Chr)
+// PROCESS: Step 1 (Exact Search for Kmers)
 // ---------------------------------------------------------
 process FULL_CHR {
     publishDir "${params.outdir}", mode: 'copy'
@@ -131,16 +111,16 @@ process FULL_CHR {
     path script_file
 
     output:
-    path "A1_window_kmers_10k_5k_final_10_10_regions.tsv"
+    path "1_Exact_search_kmers.tsv"
 
     script:
     """
-    python ${script_file} ${seq} A1_window_kmers_10k_5k_final_10_10_regions.tsv
+    python ${script_file} ${seq} 1_Exact_search_kmers.tsv
     """
 }
 
 // ---------------------------------------------------------
-// PROCESS: Step 2 (Analyze Kmers)
+// PROCESS: Step 2 (Region Creation)
 // ---------------------------------------------------------
 process ANALYZE_KMERS {
     publishDir "${params.outdir}", mode: 'copy'
@@ -150,12 +130,12 @@ process ANALYZE_KMERS {
     path script_file
 
     output:
-    path "output_windows_10k_5k_final_10_10_regions.tsv", emit: main_out
+    path "2_Regions_of_interest.tsv", emit: main_out
     path "*.png", emit: plots, optional: true
 
     script:
     """
-    python ${script_file} ${regions_tsv} output_windows_10k_5k_final_10_10 ${seq}
+    python ${script_file} ${regions_tsv} 2_Regions_of_interest ${seq}
     """
 }
 
@@ -186,7 +166,7 @@ process EXTENSION {
 }
 
 // ---------------------------------------------------------
-// PROCESS: Step 4 (Final Nodes)
+// PROCESS: Step 4 (Final Kmer Extraction)
 // ---------------------------------------------------------
 process FINAL_NODES {
     publishDir "${params.outdir}", mode: 'copy'
@@ -195,16 +175,16 @@ process FINAL_NODES {
     path script_file
 
     output:
-    path "output_final_nodes_C7_new.txt"
+    path "4_Final_kmers.txt"
 
     script:
     """
-    python ${script_file} ${extension_dir} output_final_nodes_C7_new.txt --workers ${task.cpus}
+    python ${script_file} ${extension_dir} 4_Final_kmers.txt --workers ${task.cpus}
     """
 }
 
 // ---------------------------------------------------------
-// PROCESS: Step 5 (Clusters)
+// PROCESS: Step 5 (Clustering)
 // ---------------------------------------------------------
 process CLUSTERS {
     publishDir "${params.outdir}", mode: 'copy' // Save this final file to your actual computer
@@ -216,8 +196,8 @@ process CLUSTERS {
     path script_file
 
     output:
-    path "cluster_islands_C7_new.tsv", emit: main_out
-    path "cluster_islands_C7_new_details.tsv", optional: true
+    path "5_Clusters.bed", emit: main_out
+    path "5_Clusters_details.tsv", optional: true
 
     script:
     """
@@ -225,70 +205,7 @@ process CLUSTERS {
         --mapping ${params.mapping} \
         --org "${params.org}" \
         --db_path ${params.db_path} \
-        --output cluster_islands_C7_new.tsv \
+        --output 5_Clusters.bed \
         --workers ${task.cpus}
-    """
-}
-
-// ---------------------------------------------------------
-// PROCESS: YASS
-// ---------------------------------------------------------
-process YASS {
-    publishDir "${params.outdir}", mode: 'copy'
-
-    input:
-    path seq
-    path script_file
-
-    output:
-    path "CPT1B_yass_trial1.tsv"
-
-    script:
-    """
-    python ${script_file} ${seq} CPT1B_yass_trial1.tsv --diag_tol ${params.diag_tol}
-    """
-}
-
-// ---------------------------------------------------------
-// PROCESS: Sens/Spec
-// ---------------------------------------------------------
-process SENS_SPEC {
-    publishDir "${params.outdir}", mode: 'copy'
-    
-    input:
-    path clusters
-    path yass
-    path script_file
-    path seq
-
-    output:
-    //stdout // Capture print output to screen or log
-    path "confusion_matrix.txt" 
-
-    script:
-    """
-    python ${script_file} ${yass} ${clusters} ${seq} "confusion_matrix.txt" 
-    """
-}
-
-// ---------------------------------------------------------
-// PROCESS: CDS
-// ---------------------------------------------------------
-process CDS_OVERLAP {
-    publishDir "${params.outdir}", mode: 'copy'
-    
-    input:
-    path script_file
-    path regions_bed_file
-    path gff_file
-
-    output:
-    //stdout // Capture print output to screen or log
-    path "repeats_non_transcript.bed" 
-    path "repeats_in_transcript.bed"
-
-    script:
-    """
-    python ${script_file} ${regions_bed_file} ${gff_file} --prefix ${params.prefix} --chromosome ${params.chromosome_id}
     """
 }

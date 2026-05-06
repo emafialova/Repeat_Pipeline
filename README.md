@@ -41,16 +41,24 @@ conda activate pipeline_env
 ```
 ## Usage
 
-### Database Set Up
+### Database Initialization (Required)
 Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
 ```bash
-python A1_00_db_prep.py path/to/db
+python scripts/00_db_prep.py path/to/db
 ```
 
 ### Parallel Run for Whole Genome Analysis
 For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `run_all_chr_mp.py`
 To run the parallel execution, use the following command:
 ```bash
+python run_all_chr_mp.py \
+    path/to/fasta \
+    chromosome_prefix \
+    --workers 10 \
+    --chr_list "chr1,chr2" \
+    --org "Gallus gallus" \
+    --db_path path/to/db \
+    --output_directory path/to/output_directory
 python run_all_chr_mp.py --data_source path/to/fasta --chromosome_prefix chr --workers 10
 ```
 If you wish to use the pipeline only on a selected subset of the chromosomes, use the optional chr_list flag:
@@ -81,7 +89,7 @@ Below, you can find an Entity-Relationship Diagram for the SQLite database:
 
 ![DB](Images/DB_setup.png) 
 
-It is also possible to generate an HTML visualization using the provided script: `html_vis_db_usage.py`
+It is also possible to generate an HTML visualization using the provided script: `HTML_vis.py`
 
 ## Recommended Parameter configuration
 This pipeline consists of 5 steps, each step has several parameters which can be altered by the user. The results shown below were generated with the following parameter configuration:
@@ -119,12 +127,7 @@ The sequence of this gene is available in the folder `test_data`, results of the
 ### Command
 The results were generated using the command below:
 ```bash
-nextflow run main.nf \                        
-    --sequence ./test_data/AKT2_seq.fasta \
-    --chromosome_id "CP100586.2" \
-    --sequence_id "AKT2" \
-    --outdir ./test_results/AKT2 \
-    --db_path "$(pwd)/test_results/clusters_db_AKT2.db"
+nextflow run main.nf 
 ```
 ### Output 
 The information about clusters identified and analyzed by this pipeline is automatically loaded into the prepared database. It can be accessed via command line using sqlite3. The database stores information for all clusters across all chromosomes.
@@ -150,7 +153,7 @@ The statistics calculated for each cluster present in both database and the tsv 
 To visualize a specific cluster, it is necessary to locate its unique ID (e.g. GGA32-BA46CF24.01) in the fourth column of the output .bed file or in the database: field *human_id* in the table *Instances*.  
 HTML visualizations of selected clusters are available in the folder `test_results/HTML`, the following command was used to generate that of cluster **GGA32-BA46CF24.01**:
 ```bash
-python html_vis_db_usage.py \
+python HTML_vis.py \
     --db ./test_results/clusters_db_AKT2.db \
     --fasta ./test_data/AKT2_seq.fasta \
     --id GGA32-BA46CF24.01 \

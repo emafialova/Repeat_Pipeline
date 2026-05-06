@@ -4,3 +4,4 @@ scripts/zhash_c
 scripts/__pycache__
 data_full_genomes
 work
+.nextflow

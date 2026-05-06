@@ -1,6 +1,5 @@
 import argparse
 import sys
-from Bio import SeqIO
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract whole chromosome or specific sequence from FASTA based on GFF coordinates or chromosome name.")
@@ -11,7 +10,7 @@ if __name__ == "__main__":
     parser.add_argument("--end", type=int, default=None, help="End position (1-based, inclusive) for subsequence extraction.")
 
     if len(sys.argv) == 1:
-        print("\nWelcome to a tool used to extract whole or partial chromosomal sequence from a fasta file!")
+        print("\nWelcome to a step used to extract whole or partial chromosomal sequence from a fasta file!")
         print("You need to provide input files and parameters.\n")
         parser.print_help(sys.stderr)
         sys.exit(1)
@@ -29,25 +28,27 @@ if __name__ == "__main__":
         data = soubor.read()
     entries = data.strip().split(">")
 
-    gene_sequence = ""
+    chr_sequence = ""
 
     for entry in entries:
         if entry.startswith(chromosome_id):
             lines = entry.strip().split("\n")
             sequence = ''.join(lines[1:])  # remove header and join sequence lines
-            gene_sequence = sequence
+            chr_sequence = sequence
             break
 
     if start and end:
-        subsequence = gene_sequence[start:end].upper()
+        subsequence = chr_sequence[start:end].upper()
 
     output_file = args.output_file
     output_name = output_file.strip().split("/")[-1].split(".")[0]
     
     with open(f"{output_file}", mode = "w") as soubor:
-        soubor.write(f">{output_name}|{chromosome_id} GCA_024206055.2_GGswu Xenoref annotation")
-        soubor.write("\n")
-        if start and end:
-            soubor.write(subsequence.upper())
+        if args.start and args.end:
+            header = f">{output_name}|{chromosome_id},{args.start}-{args.end}\n"
+            seq_to_record = subsequence
         else:
-            soubor.write(gene_sequence.upper())
+            header = f">{output_name}|{chromosome_id}\n"
+            seq_to_record = chr_sequence.upper()
+        soubor.write(header)
+        soubor.write(seq_to_record)
