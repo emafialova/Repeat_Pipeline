@@ -77,7 +77,7 @@ There are several generated outputs:
 - BED file 
 - SQLite database populated by repeat clusters
 
-Below, you can find an Entity-Relationship DIagram for the SQLite database:
+Below, you can find an Entity-Relationship Diagram for the SQLite database:
 
 ![DB](Images/DB_setup.png) 
 
@@ -160,11 +160,11 @@ python html_vis_db_usage.py \
 ```
 
 The generated HTML is split into five parts:
-- (A) header with cluster metadata such as genomic range and organism 
-- (B) sequence visualization where positions of each final k-mer are shown 
-- (C) cluster metrics including information about region length, coverage and GC content
-- (D) phylogenetic tree showing the relations between core k-mers
-- (E) multiple sequence alignment of the final k-mers
+- (A) Header with cluster metadata such as genomic range and organism 
+- (B) Sequence visualization where positions of each final k-mer are shown 
+- (C) Cluster metrics including information about region length, coverage and GC content
+- (D) Phylogenetic tree showing the relations between core k-mers
+- (E) Multiple sequence alignment of the final k-mers
 
 ![HTML vis - part 1 AKT2](Images/HTML_parts_A-B.png)
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
@@ -186,4 +186,5 @@ This work was carried out with the support of ELIXIR CZ Research Infrastructure 
 
 ## References
 [1] Hron, T.; Miklík, D.; Pačes, J.; Pajer, P.; Pečenka, V.; Hejnar, J.; Nehyba, J.; Elleder, D. Decoding the Avian Missing Gene Mystery: Dot Chromosomes Unmask Extensive Gene Loss and Novel Genetic Instability. Genome Biol. Evol. 2026, 18 (3), evag038. https://doi.org/10.1093/gbe/evag038.
+
 [2] Noé, L., & Kucherov, G. (2005). YASS: enhancing the sensitivity of DNA similarity search. *Nucleic Acids Research*, 33(suppl_2), W540-W543. https://doi.org/10.1093/nar/gki478
