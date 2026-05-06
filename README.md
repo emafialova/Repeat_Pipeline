@@ -137,7 +137,7 @@ This pipeline consists of 5 steps, each step has several parameters which can be
 
 The configuration was set up on **Gallus gallus genome - assembly GCA_024206055.2_GGswu**.
 
-## Example usage
+## Gene AKT2 Analysis
 I will demonstrate the usage of the pipeline on the gene AKT2 which is located on the 32nd chromosome **(Gallus gallus genome, assembly GCA_024206055.2_GGswu: CP100586.2:2596287-2608733)**.
 Below is a self dotplot generated using the YASS program [2] with default parameters. It is visible that there are several repeat clusters, identifying and analyzing them is the objective of the pipeline.
 
