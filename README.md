@@ -56,7 +56,10 @@ python scripts/00_db_prep.py ./Results/clusters.db
 
 2. **Pipeline Execution**
 ```bash
+# Run Pipeline
 nextflow run main.nf 
+# Additional Filtering as a part of the process
+python scripts/Additional_filtering.py --outdir ./Results --db ./Results/clusters.db
 ```
 
 ### Single Nextflow pipeline run
@@ -99,7 +102,7 @@ python run_all_chr_mp.py \
 ## Input
 There are only two required inputs for the pipeline: 
 - a FASTA sequence file (example is in test_sequence folder), most often a whole genome sequence 
-- an organism mapping file (default `KEGG_mapping.txt` is included in this repo). This is used to generate cluster IDs
+- an organism mapping file (default `KEGG_mapping.txt` is included in this repo). This is used to generate cluster IDs.
 
 ## Output
 There are several generated outputs:
@@ -110,7 +113,7 @@ Below, you can find an Entity-Relationship Diagram for the SQLite database:
 
 ![DB](Images/DB_setup.png) 
 
-It is also possible to generate an HTML visualization using the provided script: `HTML_vis.py`
+It is also possible to generate an HTML visualization using the provided script: `./data_manipulation/HTML_vis.py` or to run an additional python script `./data_manipulation/Summary_plot.py` which creates a barchart with normalized cluster densities per chromosome and outputs average statistics for chromosomal groups
 
 ## Recommended Parameter configuration
 This pipeline consists of 5 steps, each step has several parameters which can be altered by the user. The results shown below were generated with the following parameter configuration:
@@ -187,9 +190,6 @@ The generated HTML is split into five parts:
 
 ![HTML vis - part 1 AKT2](Images/HTML_parts_A-B.png)
 ![HTML vis - part 2 AKT2](Images/HTML_part_C.png)
-
-### Summary barchart 
-For each genome analysed in the master's thesis, there is a bar chart of the normalized cluster densities presented. These were generated using the script `./data_manipulation/Summary_plot.py`
 
 ## Troubleshooting
 The expected run time for a whole genome sequence if utilizing 10 workers is approximately 24 hours. This may vary based on the length and complexity of the DNA sequence.
