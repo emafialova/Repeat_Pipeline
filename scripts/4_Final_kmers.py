@@ -83,6 +83,8 @@ def extract_starting_kmers(tsv_file):
     for row in reader:
         if row.get("starting_kmer_flag", "").strip() == "1":
             starting_kmers.append(row["kmer"].strip())
+    unique_kmers = set(starting_kmers)
+    starting_kmers = list(unique_kmers)
     return starting_kmers
 
 def extract_kmer_info(tsv_file):
@@ -233,7 +235,25 @@ def process_region(region_id, region_tsv_file, region_abc_file):
         leaf_nodes_selected = group_and_select_kmers(leaf_nodes_final, region_kmer_info)
         leaf_nodes_final_set = filter_redundant(leaf_nodes_selected, region_kmer_info)
         kmer_dict[kmer] = leaf_nodes_final_set
-        
+    # check if all final kmers are unqiue and dont appear for multiple starting kmers    
+    # if any final kmer does, keep it for the shorter starting kmer and remove it from the longer starting kmer (since they are in a parent-child relationship)
+    unique_final_kmers = set()
+    for start_kmer, final_kmers in kmer_dict.items():
+        unique_final_kmers.update(final_kmers)
+    if len(unique_final_kmers) < sum(len(fk) for fk in kmer_dict.values()):
+        kmer_dict_unique = {}
+        unique_list = list(unique_final_kmers) #[kmer1, kmer2]
+        for unique_kmer in unique_list:
+            found_in = []
+            for start_kmer, final_kmers in kmer_dict.items():
+                if unique_kmer in final_kmers:
+                    found_in.append(start_kmer)
+            if len(found_in) == 1:
+                kmer_dict_unique[found_in[0]] = kmer_dict_unique.get(found_in[0], []) + [unique_kmer]
+            else:
+                best_start = min(found_in, key=lambda sk: region_kmer_info[sk]["length"])
+                kmer_dict_unique[best_start] = kmer_dict_unique.get(best_start, []) + [unique_kmer]
+        kmer_dict = kmer_dict_unique        
     print(f"  Finished Processing region file: {region_id}")
     return region_start, region_end, kmer_dict
     
