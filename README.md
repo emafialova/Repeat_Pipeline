@@ -98,6 +98,11 @@ python run_all_chr_mp.py \
     --db_path ./Results/clusters_GG.db \
     --output_directory ./Results/GG
 ```
+3. **Extract data from database**
+In case you want to extract data from database and save it in the form of a csv for further processing or analysis, you can use the prepared script using the following command:
+```bash
+python data_manipulation/Extract_from_db.py -d path/to/db -o path/to/output.csv -c chrom id start stop gc core_seq region_size
+```
 
 ## Input
 There are only two required inputs for the pipeline: 
