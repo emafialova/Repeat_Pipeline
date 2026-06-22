@@ -111,6 +111,13 @@ The python wrapper for whole genome analysis includes the execution of python sc
 -	**Occurrences**: The median of k-mer frequency must be higher or equal to the minimum k-mer frequency
 -	**Extension**: At least one core k-mer in the cluster must be extended during the process
 
+### **Filter Out Centromeres and Satellites**
+
+This filtering step is fully operational only for **native UCSC reference assemblies** (like Human hg38) that possess centralized SQL database tables for centromeres, satellites, and coding exons. It cannot be used for filtering external NCBI GenArk Hubs, which includes almost all GenBank (GCA_) and newer RefSeq (GCF_) accessions for non-human species (e.g., Emu or Zebra Finch), because their track data is stored in remote binary files rather than SQL tables. To execute the cross-referencing and track-formatting suite, run the following command:
+```bash
+python scripts/6_Filtering.py -g <UCSC genome ID> -d path/to/chr_directory 
+```
+
 ## Input
 There are only two required inputs for the pipeline: 
 - a FASTA sequence file (example is in test_sequence folder), most often a whole genome sequence 
