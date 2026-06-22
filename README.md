@@ -113,7 +113,7 @@ The python wrapper for whole genome analysis includes the execution of python sc
 
 ### **Filter Out Centromeres and Satellites**
 
-This filtering step is fully operational only for **native UCSC reference assemblies** (like Human hg38) that possess centralized SQL database tables for centromeres, satellites, and coding exons. It cannot be used for filtering external NCBI GenArk Hubs, which includes almost all GenBank (GCA_) and newer RefSeq (GCF_) accessions for non-human species (e.g., Emu or Zebra Finch), because their track data is stored in remote binary files rather than SQL tables. To execute the cross-referencing and track-formatting suite, run the following command:
+This filtering step is `6_Filtering.py` fully operational only for **native UCSC reference assemblies** (like Human hg38) that possess centralized SQL database tables for centromeres, satellites, and coding exons. It cannot be used for filtering external NCBI GenArk Hubs, which includes almost all GenBank (GCA_) and newer RefSeq (GCF_) accessions for non-human species (e.g., Emu or Zebra Finch), because their track data is stored in remote binary files rather than SQL tables. To execute the cross-referencing and track-formatting suite, run the following command:
 ```bash
 python scripts/6_Filtering.py -g <UCSC genome ID> -d path/to/chr_directory 
 ```
