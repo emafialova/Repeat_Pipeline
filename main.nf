@@ -14,9 +14,13 @@ params.chromosome_id = null
 params.prefix = "repeats"
 params.start = null
 params.end = null
-params.mapping = null	   
+params.mapping = null      
 params.org = null          
 params.db_path = "genome_clusters.db"
+
+// New parameters for your new steps
+params.genome_id = "hg38"
+params.filter_threshold = 0.8
 
 
 // ---------------------------------------------------------
@@ -26,14 +30,14 @@ workflow {
     input_sequence = Channel.fromPath(params.sequence, checkIfExists: true)
 
     // 3. Script Channels 
-    script_extract_seq  = file("${projectDir}/scripts/0_extract_chr.py")
-    script_full_chr      = file("${projectDir}/scripts/1_Exact_search.py")
-    script_analyze_kmers = file("${projectDir}/scripts/2_Region_creation.py")
-    script_final_nodes   = file("${projectDir}/scripts/4_Final_kmers.py")
-    script_clusters      = file("${projectDir}/scripts/5_Clustering.py")
+    script_extract_seq   = file("${projectDir}/scripts/0_extract_chr.py")
+    script_full_chr       = file("${projectDir}/scripts/1_Exact_search.py")
+    script_analyze_kmers  = file("${projectDir}/scripts/2_Region_creation.py")
+    script_final_nodes    = file("${projectDir}/scripts/4_Final_kmers.py")
+    script_clusters       = file("${projectDir}/scripts/5_Clustering.py")
     // C Files
-    script_c_main        = file("${projectDir}/scripts/3_Extension.c")
-    dir_c_hash           = file("${projectDir}/scripts/zhash-c1")
+    script_c_main         = file("${projectDir}/scripts/3_Extension.c")
+    dir_c_hash            = file("${projectDir}/scripts/zhash-c1")
 
     // 0. Extract Sequence of Interest
     EXTRACT_SEQ(script_extract_seq, input_sequence)
@@ -55,6 +59,10 @@ workflow {
 
     // F. Clusters
     CLUSTERS(FINAL_NODES.out, EXTENSION.out, input_sequence, script_clusters)
+
+    // G. Zip Extension Dir (Triggers AFTER clusters is safe and done)
+    ZIP_EXTENSION(CLUSTERS.out.main_out, EXTENSION.out)
+
 }
 
 // ---------------------------------------------------------
@@ -87,14 +95,12 @@ process COMPILE_C {
     input:
     path c_main
     path zhash_lib_dir
-    //path h_dep
     
     output:
     path "3_Extension"
 
     script:
     """
-    # Compile linking both C files. 
     gcc -O3 -o 3_Extension ${c_main} ${zhash_lib_dir}/src/zhash.c -lm
     """
 }
@@ -144,7 +150,7 @@ process EXTENSION {
     publishDir "${params.outdir}", mode: 'copy'
     input:
     path analyzed_tsv
-    path exe           // The compiled binary from COMPILE_C
+    path exe           
     path seq
     
     output:
@@ -152,13 +158,8 @@ process EXTENSION {
 
     script:
     """
-    # Ensure binary is executable
     chmod +x ${exe}
-    
-    # Make the output directory
     mkdir -p ${params.extension_dir}
-    
-    # Run the C program
     ./${exe} ${analyzed_tsv} ${seq} ${params.extension_dir} ${params.allowed_HD_error}
     """
 }
@@ -169,7 +170,7 @@ process EXTENSION {
 process FINAL_NODES {
     publishDir "${params.outdir}", mode: 'copy'
     input:
-    path extension_dir // This is a directory
+    path extension_dir 
     path script_file
 
     output:
@@ -185,7 +186,7 @@ process FINAL_NODES {
 // PROCESS: Step 5 (Clustering)
 // ---------------------------------------------------------
 process CLUSTERS {
-    publishDir "${params.outdir}", mode: 'copy' // Save this final file to your actual computer
+    publishDir "${params.outdir}", mode: 'copy' 
 
     input:
     path final_nodes_file
@@ -205,5 +206,34 @@ process CLUSTERS {
         --db_path ${params.db_path} \
         --output 5_Clusters.bed \
         --workers ${task.cpus}
+    """
+}
+
+// ---------------------------------------------------------
+// NEW PROCESS: Compress Extension Data & Safe Target Cleanup
+// ---------------------------------------------------------
+process ZIP_EXTENSION {
+    publishDir "${params.outdir}", mode: 'copy'
+
+    input:
+    path clusters_bed   
+    path extension_dir
+
+    output:
+    path "${params.extension_dir}.tar.gz"
+
+    script:
+    """
+    # 1. Pack up the folder into an archive file
+    tar -czf ${params.extension_dir}.tar.gz ${extension_dir}
+    
+    # 2. Safety verification check: If tarball exists and is not empty, delete uncompressed copy
+    if [ -s "${params.extension_dir}.tar.gz" ]; then
+        echo "Tarball verification check passed. Cleaning uncompressed output folders..."
+        rm -rf "${params.outdir}/${params.extension_dir}"
+    else
+        echo "Error: Compress verification failed or file is empty. Preserving original file data."
+        exit 1
+    fi
     """
 }

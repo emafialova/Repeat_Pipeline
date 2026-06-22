@@ -7,3 +7,5 @@ work
 .nextflow
 .nextflow.log*
 **/__pycache__
+./data_manipulation/rename_files.py
+old_versions_backup

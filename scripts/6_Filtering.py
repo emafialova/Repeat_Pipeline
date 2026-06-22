@@ -234,71 +234,67 @@ def main():
     parser = argparse.ArgumentParser(description="Advanced Nextflow-ready filtration of pipeline cluster files.")
     parser.add_argument("-g", "--genome", default="hg38", help="UCSC Genome ID (e.g., hg38, mm39)")
     parser.add_argument("-d", "--organism_dir", required=True, help="Path to your directory containing nested chromosome folders (e.g., path/to/HS/)")
-    parser.add_argument("-o", "--clean_bed_output", required=True, help="Path to save the final clean, filtered BED file for coworkers")
-    parser.add_argument("-r", "--report_output", required=True, help="Path to save the audit report of what was dropped and why (CSV)")
+    parser.add_argument("-o", "--clean_bed_output", default="final_after_filt.bed", help="Filename for the clean BED track in each chrom directory")
+    parser.add_argument("-r", "--report_output", default="filtered_out.csv", help="Filename for the audit drop report in each chrom directory")
     parser.add_argument("-t", "--threshold", type=float, default=0.80, help="Overlap fraction threshold to drop simple repeats or exons (default: 0.80)")
     
     args = parser.parse_args()
     
-    # 1. Download and compile database references from UCSC
+    # 1. Download database references globally from UCSC (Runs ONCE)
     df_blacklist, df_trf, df_exons = fetch_ucsc_tracks(args.genome)
     
-    # 2. Target pipeline 'filtered_clusters.tsv' instances across directories
-    search_pattern = os.path.join(args.organism_dir, "**", "filtered_clusters.tsv")
-    tsv_files = glob.glob(search_pattern, recursive=True)
+    # 2. Dynamic Target File Check using os.walk (Bulletproof alternative to glob)
+    target_file_name = "filtered_clusters.tsv" 
+    bed_files = []
     
-    print(f"\nFound {len(tsv_files)} files across your chromosome directories to process.")
-    if not tsv_files:
-        print("Error: No 'filtered_clusters.tsv' instances recovered.")
+    for root, dirs, files in os.walk(args.organism_dir):
+        if target_file_name in files:
+            bed_files.append(os.path.join(root, target_file_name))
+    
+    # Updated print strings to display dynamically what was targeted
+    print(f"\nFound {len(bed_files)} '{target_file_name}' files across directories to process.")
+    if not bed_files:
+        print(f"Error: No '{target_file_name}' instances found in path: {os.path.abspath(args.organism_dir)}")
         sys.exit(1)
         
-    all_clean_clusters = []
-    all_dropped_records = []
-    
-    # 3. Stream through individual chromosome files
-    for tsv_path in tsv_files:
-        if os.stat(tsv_path).st_size == 0:
+    # 3. Stream through individual chromosome files and write outputs in-place
+    for bed_path in bed_files:
+        if os.stat(bed_path).st_size == 0:
             continue
+            
+        # Extract the directory containing the current chromosome data
+        chrom_folder = os.path.dirname(bed_path)
+        print(f"-> Processing genomic filtration for: {os.path.basename(chrom_folder)}")
             
         try:
             df_pipe = pd.read_csv(
-                tsv_path, sep='\t', header=None, 
+                bed_path, sep='\t', header=None, 
                 names=['chrom', 'start', 'end', 'id'], usecols=[0, 1, 2, 3],
                 dtype={'chrom': str, 'start': int, 'end': int, 'id': str}
             )
         except Exception as e:
-            print(f"   Skipping file due to parsing errors: {tsv_path} ({e})")
+            print(f"   Skipping file due to parsing errors: {bed_path} ({e})")
             continue
             
+        # Run our interval overlap engine
         clean_df, dropped_df = process_filtering(df_pipe, df_blacklist, df_trf, df_exons, args.threshold)
         
-        if not clean_df.empty:
-            all_clean_clusters.append(clean_df)
-        if not dropped_df.empty:
-            all_dropped_records.append(dropped_df)
-            
-    # 4. Generate Final Outputs
-    print("\n--- Compiling Outputs ---")
-    
-    # Save clean BED file for your coworkers
-    if all_clean_clusters:
-        final_clean_df = pd.concat(all_clean_clusters, ignore_index=True)
-        final_clean_df = final_clean_df.sort_values(by=['chrom', 'start'])
-        final_clean_df.to_csv(args.clean_bed_output, sep='\t', header=False, index=False)
-        print(f"Success: Cleaned BED tracks written to: {args.clean_bed_output}")
-        print(f"         Saved {len(final_clean_df)} high-confidence clusters.")
-    else:
-        print("Notice: No clusters survived the filtering criteria. Clean file is empty.")
-        open(args.clean_bed_output, 'w').close() # touch empty file
+        # Determine the target output paths localized to this chromosome folder
+        chrom_bed_out = os.path.join(chrom_folder, args.clean_bed_output)
+        chrom_csv_out = os.path.join(chrom_folder, args.report_output)
         
-    # Save audit drop report for your thesis
-    if all_dropped_records:
-        final_dropped_df = pd.concat(all_dropped_records, ignore_index=True)
-        final_dropped_df.to_csv(args.report_output, index=False)
-        print(f"Success: Detailed filtration audit log saved to: {args.report_output}")
-        print(f"         Flagged and excluded {len(final_dropped_df)} regions of genomic background noise.")
-    else:
-        print("No regions were filtered out.")
+        # Save Clean Chromosome-Specific BED (UCSC Track Ready)
+        if not clean_df.empty:
+            clean_df = clean_df.sort_values(by=['start'])
+            clean_df.to_csv(chrom_bed_out, sep='\t', header=False, index=False)
+        else:
+            open(chrom_bed_out, 'w').close() # touch empty file safely
+            
+        # Save Chromosome-Specific Rejection Audit
+        if not dropped_df.empty:
+            dropped_df.to_csv(chrom_csv_out, index=False)
+
+    print("\nGlobal post-processing filtration successfully complete.")
 
 if __name__ == "__main__":
     main()
