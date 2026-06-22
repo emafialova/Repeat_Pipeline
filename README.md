@@ -69,6 +69,7 @@ python scripts/Additional_filtering.py --outdir ./Results --db ./Results/cluster
 ```
 
 2. **Global Pipeline Wrapper**
+
 For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `pipeline_wrapper.py`. The python wrapper includes all steps that need to be done manually in individual execution: database creation and additional filtering at the end.
 To run the parallel execution, use the following command:
 ```bash
@@ -85,7 +86,7 @@ python pipeline_wrapper.py \
 Below you can find a command that can be used to run this analysis for all *Gallus gallus* chromosomes assuming you have the genome sequence in `data` folder, the output directory is `Results/GG` and the database is stored in `Results` folder:
 
 ```bash
-python run_all_chr_mp.py \
+python pipeline_wrapper.py \
     ./data/GCA_024206055.2_GGswu_genomic \
     CP1005 \
     --workers 30 \
@@ -104,6 +105,7 @@ python data_manipulation/Extract_from_db.py -d path/to/db -o path/to/output.csv 
 ```
 
 2. **Additional Filtering**
+
 The python wrapper for whole genome analysis includes the execution of python script for additional filtering. The goal of this step is to discard low-complexity sequences and artifacts to ensure that the output files only contain high-confidence repetitive clusters. A cluster will only be deemed confident if it follows these 3 rules:
 -	**Region Length**: The length of the region must be at least equal to the product of the minimal length of core k-mer and minimum k-mer frequency
 -	**Occurrences**: The median of k-mer frequency must be higher or equal to the minimum k-mer frequency
