@@ -97,7 +97,7 @@ python pipeline_wrapper.py \
 
 ## Additional scripts and features
 
-1. **Extract data from database**
+### **Extract data from database**
 
 In case you want to extract data from database and save it in the form of a csv for further processing or analysis, you can use the prepared script using the following command:
 ```bash
