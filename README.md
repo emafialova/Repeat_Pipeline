@@ -47,7 +47,7 @@ The pipeline can be executed in two ways: using the automated **Global Pipeline 
 mkdir ./Results
 ```
 
-1. **Individual Pipeline Execution**
+### **Individual Pipeline Execution**
 
 You can run the nextflow pipeline to process one chromosome or one sequence in general, the output information will be stored in an SQLite3 database which needs to be initiated using the following command:
 ```bash
@@ -68,7 +68,7 @@ nextflow run main.nf \
 python scripts/Additional_filtering.py --outdir ./Results --db ./Results/clusters.db
 ```
 
-2. **Global Pipeline Wrapper**
+### **Global Pipeline Wrapper**
 
 For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `pipeline_wrapper.py`. The python wrapper includes all steps that need to be done manually in individual execution: database creation and additional filtering at the end.
 To run the parallel execution, use the following command:
@@ -104,7 +104,7 @@ In case you want to extract data from database and save it in the form of a csv 
 python data_manipulation/Extract_from_db.py -d path/to/db -o path/to/output.csv -c chrom id start stop gc core_seq region_size
 ```
 
-2. **Additional Filtering**
+### **Additional Filtering**
 
 The python wrapper for whole genome analysis includes the execution of python script for additional filtering. The goal of this step is to discard low-complexity sequences and artifacts to ensure that the output files only contain high-confidence repetitive clusters. A cluster will only be deemed confident if it follows these 3 rules:
 -	**Region Length**: The length of the region must be at least equal to the product of the minimal length of core k-mer and minimum k-mer frequency
