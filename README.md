@@ -39,45 +39,40 @@ cd Repeat_Pipeline
 conda env create -f environment.yml
 conda activate pipeline_env
 ```
+
 ## Usage
 
-### Example Usage
-0. **Create Results Directory**
+The pipeline can be executed in two ways: using the automated **Global Pipeline Wrapper** (recommended for full genomes/batches) or by running **Individual Pipeline Execution** manually (for single sequence troubleshooting). There needs to be a Results folder ready:
 ```bash
 mkdir ./Results
 ```
 
-1. **Database Initialization (Required)**
+1. **Individual Pipeline Execution**
 
-Since the information generated from the pipeline is being stored in an SQLite3 database, it must be initialized before the pipeline execution using the following command:
+You can run the nextflow pipeline to process one chromosome or one sequence in general, the output information will be stored in an SQLite3 database which needs to be initiated using the following command:
 ```bash
 python scripts/00_db_prep.py ./Results/clusters.db
 ```
 
-2. **Pipeline Execution**
+The pipeline's default parameters are set in the `nextflow.config` file, however, you can override any of the parameters using the -- flag and run it using the following command:
 ```bash
 # Run Pipeline
-nextflow run main.nf 
-# Additional Filtering as a part of the process
-python scripts/Additional_filtering.py --outdir ./Results --db ./Results/clusters.db
-```
-
-### Single Nextflow pipeline run
-If you want to process a single sequence, you can bypass the wrapper and run the Nextflow pipeline directly. The pipeline's default parameters are set in the `nextflow.config` file, however, you can override any of the parameters using the -- flag.
-```bash
 nextflow run main.nf \
     --sequence path/to/your_sequence.fna \
     --chromosome_id "chr1" \
     --sequence_id "target_gene_name" \
     --outdir Results/custom_run \
     --db_path path/to/db
+
+# Additional Filtering as a part of the process
+python scripts/Additional_filtering.py --outdir ./Results --db ./Results/clusters.db
 ```
 
-### Parallel Run for Whole Genome Analysis
-For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `run_all_chr_mp.py`
+2. **Global Pipeline Wrapper**
+For processing optimization, the pipeline can be executed across multiple chromosomes in parallel. This is the recommended approach for whole-genome analysis and is managed by the provided Python wrapper script: `pipeline_wrapper.py`. The python wrapper includes all steps that need to be done manually in individual execution: database creation and additional filtering at the end.
 To run the parallel execution, use the following command:
 ```bash
-python run_all_chr_mp.py \
+python pipeline_wrapper.py \
     path/to/fasta \
     chromosome_prefix \
     --workers 10 \
@@ -98,6 +93,21 @@ python run_all_chr_mp.py \
     --db_path ./Results/clusters_GG.db \
     --output_directory ./Results/GG
 ```
+
+## Additional scripts and features
+
+1. **Extract data from database**
+
+In case you want to extract data from database and save it in the form of a csv for further processing or analysis, you can use the prepared script using the following command:
+```bash
+python data_manipulation/Extract_from_db.py -d path/to/db -o path/to/output.csv -c chrom id start stop gc core_seq region_size
+```
+
+2. **Additional Filtering**
+The python wrapper for whole genome analysis includes the execution of python script for additional filtering. The goal of this step is to discard low-complexity sequences and artifacts to ensure that the output files only contain high-confidence repetitive clusters. A cluster will only be deemed confident if it follows these 3 rules:
+-	**Region Length**: The length of the region must be at least equal to the product of the minimal length of core k-mer and minimum k-mer frequency
+-	**Occurrences**: The median of k-mer frequency must be higher or equal to the minimum k-mer frequency
+-	**Extension**: At least one core k-mer in the cluster must be extended during the process
 
 ## Input
 There are only two required inputs for the pipeline: 
